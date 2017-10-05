@@ -1,0 +1,18 @@
+#import <UIKit/UIKit.h>
+
+extern "C" {
+    void rb_exit(int);
+    void RubyMotionInit(int argc, char **argv);
+}
+int
+main(int argc, char **argv)
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    int retval = 0;
+    setenv("VM_OPT_LEVEL", "0", true);
+    RubyMotionInit(argc, argv);
+    retval = UIApplicationMain(argc, argv, nil, @"AppDelegate");
+    rb_exit(retval);
+    [pool release];
+    return retval;
+}
