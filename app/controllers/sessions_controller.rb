@@ -5,6 +5,8 @@ class SessionsController < UIViewController
     self.title = 'Sample Login'
     self.view.backgroundColor = UIColor.blueColor
 
+    @logo_view = LogoView.build_logo(self.view.bounds)
+    self.view.addSubview(@logo_view)
 
     @login_form = LoginFormView.build_login_form
     @login_form.login_button.addTarget(self, action: "login", forControlEvents: UIControlEventTouchUpInside)

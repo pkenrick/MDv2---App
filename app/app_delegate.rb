@@ -5,13 +5,13 @@ class AppDelegate
     cdq.setup
 
     sessionsController = SessionsController.alloc.init
-    sessionsController.title = 'Login App'
-    sessionsController.view.backgroundColor = UIColor.whiteColor
+    sessionsController.title = 'Monkey Do'
+    sessionsController.view.backgroundColor = UIColor.colorWithRed(110.0/255.0, green:200.0/255.0, blue:255.0/255.0, alpha:1.0)
 
-    navigationController = UINavigationController.alloc.initWithRootViewController(sessionsController)
+    # navigationController = UINavigationController.alloc.initWithRootViewController(sessionsController)
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @window.rootViewController = navigationController
+    @window.rootViewController = sessionsController
     @window.makeKeyAndVisible
 
     true
