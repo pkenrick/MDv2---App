@@ -1,4 +1,4 @@
 dependencies: \
-  /Users/paulkenrick/Projects/personal/login_test/login_app/vendor/Pods/AFNetworking/AFNetworking/AFSecurityPolicy.m \
-  /Users/paulkenrick/Projects/personal/login_test/login_app/vendor/Pods/Target\ Support\ Files/AFNetworking/AFNetworking-prefix.pch \
-  /Users/paulkenrick/Projects/personal/login_test/login_app/vendor/Pods/AFNetworking/AFNetworking/AFSecurityPolicy.h
+  /Users/paulkenrick/Projects/personal/MDv2/app/vendor/Pods/AFNetworking/AFNetworking/AFSecurityPolicy.m \
+  /Users/paulkenrick/Projects/personal/MDv2/app/vendor/Pods/Target\ Support\ Files/AFNetworking/AFNetworking-prefix.pch \
+  /Users/paulkenrick/Projects/personal/MDv2/app/vendor/Pods/AFNetworking/AFNetworking/AFSecurityPolicy.h
