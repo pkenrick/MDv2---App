@@ -48,6 +48,7 @@ class LogoView < UIView
     title.font = UIFont.fontWithName("Chalkduster", size: 50)
     title.numberOfLines = 1
     title.adjustsFontSizeToFitWidth = true
+    # title.backgroundColor = UIColor.greenColor
     self.addSubview(title)
 
     title.translatesAutoresizingMaskIntoConstraints = false
@@ -68,6 +69,7 @@ class LogoView < UIView
     tag.font = UIFont.fontWithName("AmericanTypewriter", size: 20)
     tag.numberOfLines = 1
     tag.adjustsFontSizeToFitWidth = true
+    # tag.backgroundColor = UIColor.redColor
     self.addSubview(tag)
 
     tag.translatesAutoresizingMaskIntoConstraints = false

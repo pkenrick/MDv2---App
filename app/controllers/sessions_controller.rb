@@ -1,6 +1,6 @@
 class SessionsController < UIViewController
 
-  attr_accessor :logo_view, :continue_button
+  attr_accessor :logo_view, :continue_button, :continue_text
 
   def viewDidLoad
     super
@@ -8,6 +8,13 @@ class SessionsController < UIViewController
     self.view.backgroundColor = UIColor.blueColor
 
     # add logo to the title page
+    add_logo
+
+    # add the full screen button to the title page along with the label requesting user touch screen
+    add_continue_button
+  end
+
+  def add_logo
     logo_size = [self.view.size.height / 2, self.view.size.height / 3]
     @logo_view = LogoView.build_logo([[0,0], logo_size])
     self.view.addSubview(@logo_view)
@@ -21,14 +28,15 @@ class SessionsController < UIViewController
     self.view.addConstraint(logo_view_left)
     self.view.addConstraint(logo_view_width)
     self.view.addConstraint(logo_view_height)
+  end
 
-    # add the full screen button to the title page along with the label requesting user touch screen
+  def add_continue_button
     @continue_button = UIButton.buttonWithType(UIButtonTypeCustom)
     continue_button.frame = self.view.bounds
     continue_button.backgroundColor = UIColor.clearColor
     self.view.addSubview(continue_button)
 
-    continue_text = UILabel.alloc.init
+    @continue_text = UILabel.alloc.init
     continue_text.text = ("Touch to start")
     continue_text.font = UIFont.fontWithName("AmericanTypewriter", size: 15)
     continue_text.sizeToFit
@@ -45,22 +53,19 @@ class SessionsController < UIViewController
 
   def continue_action
     if @login_form.nil? || !@login_form.isDescendantOfView(self.view)
+
       # alter subview constraints to make space for login fields
-      logo_view_top = NSLayoutConstraint.constraintWithItem(logo_view, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeTop, multiplier: 1.0, constant: self.view.size.height * 0.1)
-      logo_view_left = NSLayoutConstraint.constraintWithItem(logo_view, attribute: NSLayoutAttributeLeft, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeLeft, multiplier: 1.0, constant: self.view.size.width * 0.1)
-      logo_view_width = NSLayoutConstraint.constraintWithItem(logo_view, attribute: NSLayoutAttributeWidth, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeWidth, multiplier: 0.8, constant: 0)
-      logo_view_height = NSLayoutConstraint.constraintWithItem(logo_view, attribute: NSLayoutAttributeHeight, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeHeight, multiplier: 0.4, constant: 0)
-      self.view.addConstraint(logo_view_top)
-      self.view.addConstraint(logo_view_left)
-      self.view.addConstraint(logo_view_width)
-      self.view.addConstraint(logo_view_height)
+      logo_view_top_new_constraint = NSLayoutConstraint.constraintWithItem(logo_view, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeTop, multiplier: 1.0, constant: self.view.size.height * 0.1)
+      logo_view_top_old_constraint = self.view.constraints.select{ |constraint| constraint.firstItem == logo_view && constraint.firstAttribute == NSLayoutAttributeTop }.first
+      self.view.removeConstraint(logo_view_top_old_constraint)
+      self.view.addConstraint(logo_view_top_new_constraint)
 
       continue_button.removeFromSuperview
+      continue_text.removeFromSuperview
 
       UIView.animateWithDuration(0.2,
         animations: lambda {
         self.view.layoutIfNeeded
-        # @login_form.alpha = 1
         },
         completion: lambda { |finished|
           # build the login form fields
@@ -71,7 +76,7 @@ class SessionsController < UIViewController
           @login_form.alpha = 0
 
           @login_form.email.delegate = self
-          @login_form.email.delegate = self
+          @login_form.password.delegate = self
 
           self.view.addSubview(@login_form)
 
@@ -90,10 +95,6 @@ class SessionsController < UIViewController
             @login_form.alpha = 1
             })
         })
-
-      # self.view.layoutIfNeeded
-
-
     else
       # alter button constraints to back to original
       continue_button_top = NSLayoutConstraint.constraintWithItem(continue_button, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: @logo_view, attribute: NSLayoutAttributeBottom, multiplier: 1.0, constant: 40)
@@ -106,20 +107,17 @@ class SessionsController < UIViewController
         @login_form.alpha = 0
         })
     end
-
-
   end
 
   def login
-    @login_form.disable_form
+    disable_login_form
     api_client.token(@login_form.email.text, @login_form.password.text) do |result|
       if result.nil?
-        display_message("Connection Problem", "Sorry, there seems to be a problem with this device's connectin right now.")
+        display_message("Connection Problem", "Sorry, there seems to be a problem with this device's connection right now.")
       else
         if result['auth_token']
           user.save_token(@login_form.email.text, result['auth_token'])
           display_message("Welcome", "Welcome, #{@login_form.email.text}")
-          # show_view_tasks_button
         else
           display_message("Error", "Invalid Credentials.")
         end
@@ -133,7 +131,7 @@ class SessionsController < UIViewController
   end
 
   def alertView(alert_box, clickedButtonAtIndex: button_index)
-    @login_form.enable_form
+    enable_login_form
   end
 
   def api_client
@@ -144,36 +142,27 @@ class SessionsController < UIViewController
     @current_user ||= User.new
   end
 
-  def show_view_tasks_button
-    @login_form.addSubview(@login_form.view_tasks_button)
-    @login_form.view_tasks_button.addTarget(self, action: "show_tasks", forControlEvents: UIControlEventTouchUpInside)
-  end
-
-  def show_tasks
-    api_client.get_tasks
-  end
-
   def textFieldShouldReturn(textfield)
     textfield.resignFirstResponder
     return false
   end
 
-  def disable_form
-    email.enabled = false
-    email.backgroundColor = UIColor.lightGrayColor
-    password.enabled = false
-    password.backgroundColor = UIColor.lightGrayColor
-    login_button.hidden = true
-    spinner.startAnimating
+  def disable_login_form
+    @login_form.email.enabled = false
+    @login_form.email.backgroundColor = UIColor.lightGrayColor
+    @login_form.password.enabled = false
+    @login_form.password.backgroundColor = UIColor.lightGrayColor
+    @login_form.login_button.hidden = true
+    @login_form.spinner.startAnimating
   end
 
-  def enable_form
-    email.enabled = true
-    email.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
-    password.enabled = true
-    password.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
-    login_button.hidden = false
-    spinner.stopAnimating
+  def enable_login_form
+    @login_form.email.enabled = true
+    @login_form.email.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
+    @login_form.password.enabled = true
+    @login_form.password.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
+    @login_form.login_button.hidden = false
+    @login_form.spinner.stopAnimating
   end
 
   def textFieldDidBeginEditing(textfield)
@@ -182,16 +171,31 @@ class SessionsController < UIViewController
   end
 
   def keyboard_appeared(notification)
-    puts "keyboard_appeared"
     NSNotificationCenter.defaultCenter.removeObserver(self, name: UIKeyboardDidShowNotification, object: nil)
+
+    login_form_top_constraint = self.view.constraints.select{ |constraint| constraint.firstItem == @login_form && constraint.firstAttribute == NSLayoutAttributeTop }.first
+    logo_view_top_constraint = self.view.constraints.select{ |constraint| constraint.firstItem == logo_view && constraint.firstAttribute == NSLayoutAttributeTop }.first
+
+    return if login_form_top_constraint.constant < 0
 
     keyboard_rect_ptr = Pointer.new(CGRect.type)
     notification.userInfo.valueForKey('UIKeyboardFrameEndUserInfoKey').getValue(keyboard_rect_ptr)
     keyboard_rect = keyboard_rect_ptr[0]
     keyboard_height = keyboard_rect.size.height
 
-    login_form_top = NSLayoutConstraint.constraintWithItem(@login_form, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeCenterY, multiplier: 1.0, constant: -keyboard_height)
-    self.view.addConstraint(login_form_top)
+    login_form_top_constraint.constant -= keyboard_height
+    logo_view_top_constraint.constant -= keyboard_height
+
+    logo_view_tag_old_top_constraint = logo_view.constraints.select{ |constraint| constraint.firstItem == logo_view.tag && constraint.firstAttribute == NSLayoutAttributeTop }.first
+    logo_view.removeConstraint(logo_view_tag_old_top_constraint)
+    logo_view_tag_new_bottom_constraint = NSLayoutConstraint.constraintWithItem(logo_view.tag, attribute: NSLayoutAttributeBottom, relatedBy: NSLayoutRelationEqual, toItem: logo_view, attribute: NSLayoutAttributeBottom, multiplier: 1.0, constant: - logo_view.size.height * 0.1)
+    logo_view.addConstraint(logo_view_tag_new_bottom_constraint)
+
+    logo_view_title_old_top_constraint = logo_view.constraints.select{ |constraint| constraint.firstItem == logo_view.title && constraint.firstAttribute == NSLayoutAttributeTop }.first
+    logo_view.removeConstraint(logo_view_title_old_top_constraint)
+    logo_view_title_new_bottom_constraint = NSLayoutConstraint.constraintWithItem(logo_view.title, attribute: NSLayoutAttributeBottom, relatedBy: NSLayoutRelationEqual, toItem: logo_view.tag, attribute: NSLayoutAttributeTop, multiplier: 1.0, constant: 0)
+    logo_view.addConstraint(logo_view_title_new_bottom_constraint)
+
     UIView.animateWithDuration(0.2,
       animations: lambda {
         self.view.layoutIfNeeded
@@ -200,18 +204,31 @@ class SessionsController < UIViewController
   end
 
   def keyboard_disappeared(notification)
-    puts "keyboard_disappeared"
     NSNotificationCenter.defaultCenter.removeObserver(self, name: UIKeyboardDidHideNotification, object: nil)
+
+    login_form_top_constraint = self.view.constraints.select{ |constraint| constraint.firstItem == @login_form && constraint.firstAttribute == NSLayoutAttributeTop }.first
+    logo_view_top_constraint = self.view.constraints.select{ |constraint| constraint.firstItem == logo_view && constraint.firstAttribute == NSLayoutAttributeTop }.first
+
+    return if login_form_top_constraint.constant > 0
 
     keyboard_rect_ptr = Pointer.new(CGRect.type)
     notification.userInfo.valueForKey('UIKeyboardFrameEndUserInfoKey').getValue(keyboard_rect_ptr)
     keyboard_rect = keyboard_rect_ptr[0]
     keyboard_height = keyboard_rect.size.height
 
-    puts @login_form
+    login_form_top_constraint.constant += keyboard_height
+    logo_view_top_constraint.constant += keyboard_height
 
-    login_form_top = NSLayoutConstraint.constraintWithItem(@login_form, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeCenterY, multiplier: 1.0, constant: 0)
-    self.view.addConstraint(login_form_top)
+    logo_view_tag_old_top_constraint = logo_view.constraints.select{ |constraint| constraint.firstItem == logo_view.tag && constraint.firstAttribute == NSLayoutAttributeBottom }.first
+    logo_view.removeConstraint(logo_view_tag_old_top_constraint)
+    logo_view_tag_new_bottom_constraint = NSLayoutConstraint.constraintWithItem(logo_view.tag, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: logo_view, attribute: NSLayoutAttributeTop, multiplier: 1.0, constant: logo_view.size.height / 10 * 8)
+    logo_view.addConstraint(logo_view_tag_new_bottom_constraint)
+
+    logo_view_title_old_top_constraint = logo_view.constraints.select{ |constraint| constraint.firstItem == logo_view.title && constraint.firstAttribute == NSLayoutAttributeBottom }.first
+    logo_view.removeConstraint(logo_view_title_old_top_constraint)
+    logo_view_title_new_bottom_constraint = NSLayoutConstraint.constraintWithItem(logo_view.title, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: logo_view, attribute: NSLayoutAttributeTop, multiplier: 1.0, constant: logo_view.size.height / 10 * 5)
+    logo_view.addConstraint(logo_view_title_new_bottom_constraint)
+
     UIView.animateWithDuration(0.2,
       animations: lambda {
         self.view.layoutIfNeeded
