@@ -17,7 +17,7 @@ class LoginFormView < UIView
     @email = UITextField.alloc.init
     @email.font = UIFont.fontWithName("AmericanTypewriter", size: 20)
     @email.placeholder = 'Email Address'
-    # @email.text = 'paul@email.com'
+    @email.text = 'paul@email.com'
     @email.setBorderStyle(UITextBorderStyleNone)
     @email.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
     @email.returnKeyType = UIReturnKeyDone
@@ -45,7 +45,7 @@ class LoginFormView < UIView
     @password = UITextField.alloc.init
     @password.font = UIFont.fontWithName("AmericanTypewriter", size: 20)
     @password.placeholder = 'Password'
-    # @password.text = 'helloo'
+    @password.text = 'password'
     @password.secureTextEntry = true
     @password.setBorderStyle(UITextBorderStyleNone)
     @password.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)

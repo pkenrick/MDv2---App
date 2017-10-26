@@ -1,7 +1,7 @@
 class ApiClient
 
   def initialize
-    @client = AFMotion::Client.build('https://frozen-beach-75348.herokuapp.com') do
+    @client = AFMotion::Client.build('https://guarded-cove-75567.herokuapp.com/') do
       header "Accept", "application/json"
 
       response_serializer :json
@@ -20,7 +20,6 @@ class ApiClient
     @client.get("api/user_tasks") do |result|
       # block.call(result.object)
       puts result.object
-
     end
   end
 

@@ -117,7 +117,7 @@ class SessionsController < UIViewController
       else
         if result['auth_token']
           user.save_token(@login_form.email.text, result['auth_token'])
-          display_message("Welcome", "Welcome, #{@login_form.email.text}")
+          load_navigation_controller
         else
           display_message("Error", "Invalid Credentials.")
         end
@@ -234,6 +234,20 @@ class SessionsController < UIViewController
         self.view.layoutIfNeeded
       }
     )
+  end
+
+  def load_navigation_controller
+    private_task_list_controller = TaskListController.alloc.initWithType('private')
+    shared_task_list_controller = TaskListController.alloc.initWithType('shared')
+    settings_controller = UIViewController.alloc.init
+    private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
+    shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
+    # task_list_controller.view.backgroundColor = UIColor.whiteColor
+    tab_bar_controller = UITabBarController.alloc.init
+    tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
+    self.presentViewController(tab_bar_controller, animated: true, completion: nil)
+
+    settings_controller.tabBarItem = UITabBarItem.alloc.initWithTitle("Settings", image: UIImage.imageNamed("settingsIcon30.png"), tag: 1)
   end
 
 end

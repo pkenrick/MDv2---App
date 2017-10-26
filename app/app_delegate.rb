@@ -14,6 +14,10 @@ class AppDelegate
     @window.rootViewController = sessionsController
     @window.makeKeyAndVisible
 
+    UINavigationBar.appearance.barTintColor = UIColor.colorWithRed(110.0/255.0, green:200.0/255.0, blue:255.0/255.0, alpha:1.0)
+
+
     true
   end
+
 end

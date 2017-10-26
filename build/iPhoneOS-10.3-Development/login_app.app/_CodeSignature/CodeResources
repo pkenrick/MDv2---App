@@ -58,19 +58,35 @@
 		</data>
 		<key>login_app.app.dSYM/Contents/Resources/DWARF/login_app</key>
 		<data>
-		ny1zKi+gqpfdfiQ/1s+2k5K6mAw=
+		gFfBeYnmjDWFNkmQuOkKf1xrYmY=
 		</data>
 		<key>login_app.momd/0001 initial.mom</key>
 		<data>
-		G1rEpApXzc9WUhum3tBofkRWJCY=
+		MaS5xEmPA45vOlu/g3kLrxLBDrw=
 		</data>
 		<key>login_app.momd/0001 initial.omo</key>
 		<data>
-		LLIfsB2QM4XdQ3dsgSXwZ0RO7os=
+		7s54LnJRsYucZHiEXf5GEB25TbA=
 		</data>
 		<key>login_app.momd/VersionInfo.plist</key>
 		<data>
-		37rZUFD9vvutwhutLdbbJhHaJM4=
+		z7/csV9GkGBJ8ggG549eWlz9HL8=
+		</data>
+		<key>monkeyIcon.png</key>
+		<data>
+		GJc949beVxcD1k5HzgdQzg0+kuw=
+		</data>
+		<key>monkeyIconDouble.png</key>
+		<data>
+		GJc949beVxcD1k5HzgdQzg0+kuw=
+		</data>
+		<key>settingsIcon.png</key>
+		<data>
+		FKge+jOy8Y6fJiaZGweGltvNEZg=
+		</data>
+		<key>settingsIcon30.png</key>
+		<data>
+		8jcLYnN2CnfqUO6THb3rrdFWJWk=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -200,44 +216,88 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			ny1zKi+gqpfdfiQ/1s+2k5K6mAw=
+			gFfBeYnmjDWFNkmQuOkKf1xrYmY=
 			</data>
 			<key>hash2</key>
 			<data>
-			aRAFuOqyfflmyfP1FS8T4UHcMq2acPaRJ/IyRabuLBM=
+			AihK1t9mRA5DXeEeEYyzIsAPGtwYaYwq/dfFIVYGfZY=
 			</data>
 		</dict>
 		<key>login_app.momd/0001 initial.mom</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			G1rEpApXzc9WUhum3tBofkRWJCY=
+			MaS5xEmPA45vOlu/g3kLrxLBDrw=
 			</data>
 			<key>hash2</key>
 			<data>
-			mun47VrxTlWwg3VpkOGNrqx7OAEbeR4SiT1D8sauT8U=
+			jPmocL5mTrFdnZR5YUvD9QlzijvUGfPNWdq/o754QsI=
 			</data>
 		</dict>
 		<key>login_app.momd/0001 initial.omo</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			LLIfsB2QM4XdQ3dsgSXwZ0RO7os=
+			7s54LnJRsYucZHiEXf5GEB25TbA=
 			</data>
 			<key>hash2</key>
 			<data>
-			RHvJ0CxtLhMo59cDm1yD2JmNcUyM1YbVFV/MnaxYHDg=
+			x8LdffDKzEwCwKtAOQiT0SX/rnKH3MJAUUjSUxemvMQ=
 			</data>
 		</dict>
 		<key>login_app.momd/VersionInfo.plist</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			37rZUFD9vvutwhutLdbbJhHaJM4=
+			z7/csV9GkGBJ8ggG549eWlz9HL8=
 			</data>
 			<key>hash2</key>
 			<data>
-			E6Nq8ZoMbz/Qm7mkfkAvXCoSA2rivnwtXs6cPk5zpZo=
+			/gQnMNTdrC+WCYg34miO6a7PyNOe6yKahtyrOOd4M5M=
+			</data>
+		</dict>
+		<key>monkeyIcon.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			GJc949beVxcD1k5HzgdQzg0+kuw=
+			</data>
+			<key>hash2</key>
+			<data>
+			wZbyIvqTJkLsUoeln0wvl7PC81pY8q75SMaAAnxisBk=
+			</data>
+		</dict>
+		<key>monkeyIconDouble.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			GJc949beVxcD1k5HzgdQzg0+kuw=
+			</data>
+			<key>hash2</key>
+			<data>
+			wZbyIvqTJkLsUoeln0wvl7PC81pY8q75SMaAAnxisBk=
+			</data>
+		</dict>
+		<key>settingsIcon.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			FKge+jOy8Y6fJiaZGweGltvNEZg=
+			</data>
+			<key>hash2</key>
+			<data>
+			ZUTM189SG/GBG5q/tRkadrSnZmnWzBJFzUP021vRjSE=
+			</data>
+		</dict>
+		<key>settingsIcon30.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			8jcLYnN2CnfqUO6THb3rrdFWJWk=
+			</data>
+			<key>hash2</key>
+			<data>
+			9xv6v5fZYqKWiS9iPY1DDeCLsuW9eANl5ryxgpHCaas=
 			</data>
 		</dict>
 	</dict>

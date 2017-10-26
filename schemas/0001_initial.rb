@@ -12,6 +12,7 @@ schema "0001 initial" do
   # entity "Post" do
   #   string :title, optional: false
   #   string :body
+  #   boolean :tester
   #
   #   datetime :created_at
   #   datetime :updated_at
@@ -24,10 +25,9 @@ schema "0001 initial" do
 
   entity 'Task' do
     string :title, optional: false
-    # string :description, optional: true
-    # datetime :due_date, optional: true
-    # boolean :complete, optional: false
-    # integer32 :user_id, optional: false
+    boolean :complete, optional: false
+    string :details
+    datetime :due_date
   end
 
 end
