@@ -14,12 +14,11 @@ class ApiClient
     end
   end
 
-  def get_tasks
+  def pull_tasks(type, &block)
     auth_token = App::Persistence['auth_token']
     @client.headers["Authorization"] = "Token token=#{App::Persistence['auth_token']}"
-    @client.get("api/user_tasks") do |result|
-      # block.call(result.object)
-      puts result.object
+    @client.post("api/user_tasks", list_type: type) do |result|
+      block.call(result.object)
     end
   end
 

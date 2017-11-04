@@ -24,6 +24,7 @@ schema "0001 initial" do
   # end
 
   entity 'Task' do
+    integer32 :api_id, optional: false
     string :title, optional: false
     boolean :complete, optional: false
     string :details

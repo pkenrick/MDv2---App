@@ -237,17 +237,20 @@ class SessionsController < UIViewController
   end
 
   def load_navigation_controller
-    private_task_list_controller = TaskListController.alloc.initWithType('private')
-    shared_task_list_controller = TaskListController.alloc.initWithType('shared')
-    settings_controller = UIViewController.alloc.init
-    private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
-    shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
-    # task_list_controller.view.backgroundColor = UIColor.whiteColor
-    tab_bar_controller = UITabBarController.alloc.init
-    tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
-    self.presentViewController(tab_bar_controller, animated: true, completion: nil)
+    api_client.pull_tasks('private') do |private_api_tasks|
+      private_task_list_controller = TaskListController.alloc.initWithType('private', private_api_tasks['tasks'])
+      api_client.pull_tasks('shared') do |shared_api_tasks|
+        shared_task_list_controller = TaskListController.alloc.initWithType('shared', shared_api_tasks['tasks'])
+        settings_controller = UIViewController.alloc.init
+        private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
+        shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
+        tab_bar_controller = UITabBarController.alloc.init
+        tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
+        self.presentViewController(tab_bar_controller, animated: true, completion: nil)
 
-    settings_controller.tabBarItem = UITabBarItem.alloc.initWithTitle("Settings", image: UIImage.imageNamed("settingsIcon30.png"), tag: 1)
+        settings_controller.tabBarItem = UITabBarItem.alloc.initWithTitle("Settings", image: UIImage.imageNamed("settingsIcon30.png"), tag: 1)
+      end
+    end
   end
 
 end
