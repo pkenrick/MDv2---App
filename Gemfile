@@ -11,3 +11,5 @@ gem 'bubble-wrap-http'
 
 # Using cdq (core data query) to manage core data stack
 gem 'cdq'
+
+gem 'motion-provisioning'

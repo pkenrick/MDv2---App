@@ -15,11 +15,10 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'login_app'
 
-  # app.sdk_version = "11.1"
-  # app.deployment_target = '11.1'
-
   app.identifier = 'com.firstdoman.firstapp'
   app.codesign_certificate = 'iPhone Developer: William Kenrick (Y5NZ3V5728)'
-  app.provisioning_profile = '/Users/paulkenrick/Projects/personal/login_test/login_app/firstprofile.mobileprovision'
+  # app.provisioning_profile = '/Users/paulkenrick/Projects/personal/login_test/login_app/firstprofile.mobileprovision'
+  app.provisioning_profile = '/Users/paulkenrick/Projects/personal/MDv2/app/firstprofile.mobileprovision'
+
 end
 task :"build:simulator" => :"schema:build"

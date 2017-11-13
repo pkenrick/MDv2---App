@@ -238,9 +238,9 @@ class SessionsController < UIViewController
 
   def load_navigation_controller
     api_client.pull_tasks('private') do |private_api_tasks|
-      private_task_list_controller = TaskListController.alloc.initWithType('private', private_api_tasks['tasks'])
+      private_task_list_controller = TaskListController.alloc.initWithType('private', Task.where(type: 'private'))
       api_client.pull_tasks('shared') do |shared_api_tasks|
-        shared_task_list_controller = TaskListController.alloc.initWithType('shared', shared_api_tasks['tasks'])
+        shared_task_list_controller = TaskListController.alloc.initWithType('shared', Task.where(type: 'shared'))
         settings_controller = UIViewController.alloc.init
         private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
         shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)

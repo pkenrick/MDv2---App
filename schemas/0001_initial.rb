@@ -29,6 +29,7 @@ schema "0001 initial" do
     boolean :complete, optional: false
     string :details
     datetime :due_date
+    string :type
   end
 
 end

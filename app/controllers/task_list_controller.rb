@@ -44,12 +44,31 @@ class TaskListController < UIViewController
     # text = NSMutableAttributedString.alloc.initWithString('Only you have access to the tasks on this list.')
     # rect = text.boundingRectWithSize(cg_size, options: (NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading), context: nil)
 
-    description_label = UILabel.alloc.initWithFrame([[0,0],[self.view.frame.size.width, header_view.frame.size.height / 3]])
-    description_label.text = ' Only you have access to the tasks on this list ' if type == 'private'
-    description_label.text = ' Both you and your partner have access to these tasks ' if type == 'shared'
+    lay_out_table_header_view(header_view)
+
+    # puts NSDate.new
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  def lay_out_table_header_view(header_view)
+    description_label = UILabel.alloc.initWithFrame([[self.view.frame.size.width * 0.1 / 2,0],[self.view.frame.size.width * 0.9, header_view.frame.size.height / 3]])
+    description_label.text = 'Only you have access to the tasks on this list' if type == 'private'
+    description_label.text = 'Both you and your partner have access to these tasks' if type == 'shared'
     description_label.numberOfLines = 1
     description_label.adjustsFontSizeToFitWidth = true
-    description_label.textAlignment = NSTextAlignmentCenter;
+    description_label.textAlignment = NSTextAlignmentCenter
     header_view.addSubview(description_label)
 
     horizontal_line_1 = UIView.alloc.init
@@ -67,25 +86,54 @@ class TaskListController < UIViewController
     horizontal_line_2.frame = [[0, header_view.frame.size.height - 1],[self.view.frame.size.width, 1]]
     header_view.addSubview(horizontal_line_2)
 
-    # description_label.font = UIFont.fontWithName("AmericanTypewriter", size: 50)
+    total_tasks_view = UILabel.alloc.init
+    total_tasks_view.frame = [[self.view.frame.size.width / 2 / 3 / 2,(header_view.frame.size.height + description_label.frame.size.height) / 3],[self.view.frame.size.width / 2 / 3 * 2, (header_view.frame.size.height - description_label.frame.size.height) / 3 * 2]]
+    header_view.addSubview(total_tasks_view)
 
+    total_tasks_label = UILabel.alloc.initWithFrame([[0,0],[total_tasks_view.frame.size.width / 3 * 2, total_tasks_view.frame.size.height]])
+    total_tasks_label.text = 'Total Tasks'
+    total_tasks_label.font = UIFont.fontWithName("AmericanTypewriter", size: 30)
+    total_tasks_label.numberOfLines = 2
+    total_tasks_label.adjustsFontSizeToFitWidth = true
+    total_tasks_label.textAlignment = NSTextAlignmentCenter
+    total_tasks_view.addSubview(total_tasks_label)
 
+    total_tasks_number = UILabel.alloc.initWithFrame([[total_tasks_label.frame.size.width,0],[total_tasks_view.frame.size.width / 3 * 1, total_tasks_view.frame.size.height]])
+    total_tasks_number.text = tasks.length.to_s
+    total_tasks_number.font = UIFont.fontWithName("Chalkduster", size: 30)
+    total_tasks_number.numberOfLines = 1
+    total_tasks_number.adjustsFontSizeToFitWidth = true
+    total_tasks_number.textAlignment = NSTextAlignmentCenter
+    total_tasks_view.addSubview(total_tasks_number)
+
+    due_today_view = UILabel.alloc.init
+    due_today_view.frame = [[(self.view.frame.size.width / 2) + (self.view.frame.size.width / 2 / 3 / 2),(header_view.frame.size.height + description_label.frame.size.height) / 3],[self.view.frame.size.width / 2 / 3 * 2, (header_view.frame.size.height - description_label.frame.size.height) / 3 * 2]]
+    header_view.addSubview(due_today_view)
+
+    due_today_label = UILabel.alloc.initWithFrame([[0,0],[due_today_view.frame.size.width / 3 * 2, due_today_view.frame.size.height]])
+    due_today_label.text = 'Due Today'
+    due_today_label.font = UIFont.fontWithName("AmericanTypewriter", size: 30)
+    due_today_label.numberOfLines = 2
+    due_today_label.adjustsFontSizeToFitWidth = true
+    due_today_label.textAlignment = NSTextAlignmentCenter
+    due_today_view.addSubview(due_today_label)
+
+    due_total_number = UILabel.alloc.initWithFrame([[due_today_label.frame.size.width,0],[due_today_view.frame.size.width / 3 * 1, due_today_view.frame.size.height]])
+    no_of_tasks_due_today = 0
+    tasks.each do |task|
+      todays_date = NSDate.new
+      puts task.due_date
+      if task.due_date.day == todays_date.day && task.due_date.month == todays_date.month && task.due_date.year == todays_date.year
+        no_of_tasks_due_today += 1
+      end
+    end
+    due_total_number.text = no_of_tasks_due_today.to_s
+    due_total_number.font = UIFont.fontWithName("Chalkduster", size: 30)
+    due_total_number.numberOfLines = 1
+    due_total_number.adjustsFontSizeToFitWidth = true
+    due_total_number.textAlignment = NSTextAlignmentCenter
+    due_today_view.addSubview(due_total_number)
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   # === UITableView Delegate ====
@@ -104,7 +152,7 @@ class TaskListController < UIViewController
     cell = tableView.dequeueReusableCellWithIdentifier(reuseIdentifier)
     cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: reuseIdentifier)
 
-    cell.textLabel.text = tasks[indexPath.row][:title]
+    cell.textLabel.text = tasks[indexPath.row].title
     # cell.imageView.image = UIImage.imageNamed("Checkbox-complete.png")
 
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator

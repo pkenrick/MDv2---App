@@ -18,7 +18,32 @@ class ApiClient
     auth_token = App::Persistence['auth_token']
     @client.headers["Authorization"] = "Token token=#{App::Persistence['auth_token']}"
     @client.post("api/user_tasks", list_type: type) do |result|
+      save_to_local_database(result.object['tasks'], type)
       block.call(result.object)
+    end
+  end
+
+  def save_to_local_database(tasks, type)
+    tasks.each do |task|
+      local_task = Task.where(api_id: task[:id])
+      if local_task.any?
+        local_task = local_task.first
+        local_task.api_id = task[:id]
+        local_task.title = task[:title]
+        local_task.complete = task[:complete?]
+        local_task.details = task[:description]
+        local_task.due_date = NSDate.dateWithNaturalLanguageString(task[:due_date])
+        local_task.type = type
+      else
+        Task.create(api_id: task[:id],
+                    title: task[:title],
+                    complete: task[:complete?],
+                    details: task[:description],
+                    due_date: NSDate.dateWithNaturalLanguageString(task[:due_date]),
+                    type: type
+                    )
+      end
+      Task.save
     end
   end
 
