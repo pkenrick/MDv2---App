@@ -21,6 +21,9 @@ class TaskListController < UIViewController
 
   def create_table_view
     @table_view = UITableView.alloc.init
+    @table_view.separatorStyle = UITableViewCellSeparatorStyleNone
+    @table_view.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
+
     self.view.addSubview(@table_view)
     @table_view.translatesAutoresizingMaskIntoConstraints = false
     table_view_top = NSLayoutConstraint.constraintWithItem(@table_view, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeTopMargin, multiplier: 1.0, constant: 0.0)
@@ -66,6 +69,7 @@ class TaskListController < UIViewController
     description_label = UILabel.alloc.initWithFrame([[self.view.frame.size.width * 0.1 / 2,0],[self.view.frame.size.width * 0.9, header_view.frame.size.height / 3]])
     description_label.text = 'Only you have access to the tasks on this list' if type == 'private'
     description_label.text = 'Both you and your partner have access to these tasks' if type == 'shared'
+    description_label.textColor = UIColor.grayColor
     description_label.numberOfLines = 1
     description_label.adjustsFontSizeToFitWidth = true
     description_label.textAlignment = NSTextAlignmentCenter
@@ -93,6 +97,7 @@ class TaskListController < UIViewController
     total_tasks_label = UILabel.alloc.initWithFrame([[0,0],[total_tasks_view.frame.size.width / 3 * 2, total_tasks_view.frame.size.height]])
     total_tasks_label.text = 'Total Tasks'
     total_tasks_label.font = UIFont.fontWithName("AmericanTypewriter", size: 30)
+    total_tasks_label.textColor = UIColor.grayColor
     total_tasks_label.numberOfLines = 2
     total_tasks_label.adjustsFontSizeToFitWidth = true
     total_tasks_label.textAlignment = NSTextAlignmentCenter
@@ -101,6 +106,7 @@ class TaskListController < UIViewController
     total_tasks_number = UILabel.alloc.initWithFrame([[total_tasks_label.frame.size.width,0],[total_tasks_view.frame.size.width / 3 * 1, total_tasks_view.frame.size.height]])
     total_tasks_number.text = tasks.length.to_s
     total_tasks_number.font = UIFont.fontWithName("Chalkduster", size: 30)
+    total_tasks_number.textColor = UIColor.grayColor
     total_tasks_number.numberOfLines = 1
     total_tasks_number.adjustsFontSizeToFitWidth = true
     total_tasks_number.textAlignment = NSTextAlignmentCenter
@@ -113,6 +119,7 @@ class TaskListController < UIViewController
     due_today_label = UILabel.alloc.initWithFrame([[0,0],[due_today_view.frame.size.width / 3 * 2, due_today_view.frame.size.height]])
     due_today_label.text = 'Due Today'
     due_today_label.font = UIFont.fontWithName("AmericanTypewriter", size: 30)
+    due_today_label.textColor = UIColor.grayColor
     due_today_label.numberOfLines = 2
     due_today_label.adjustsFontSizeToFitWidth = true
     due_today_label.textAlignment = NSTextAlignmentCenter
@@ -122,13 +129,13 @@ class TaskListController < UIViewController
     no_of_tasks_due_today = 0
     tasks.each do |task|
       todays_date = NSDate.new
-      puts task.due_date
       if task.due_date.day == todays_date.day && task.due_date.month == todays_date.month && task.due_date.year == todays_date.year
         no_of_tasks_due_today += 1
       end
     end
     due_total_number.text = no_of_tasks_due_today.to_s
     due_total_number.font = UIFont.fontWithName("Chalkduster", size: 30)
+    due_total_number.textColor = UIColor.grayColor
     due_total_number.numberOfLines = 1
     due_total_number.adjustsFontSizeToFitWidth = true
     due_total_number.textAlignment = NSTextAlignmentCenter
@@ -146,18 +153,41 @@ class TaskListController < UIViewController
     @tasks.count
   end
 
+  def tableView(tableView, heightForRowAtIndexPath: indexPath)
+    height = self.view.frame.size.height / 5
+    height += 5 if indexPath.row == 0 || indexPath.row == (@tasks.count - 1)
+    height
+  end
+
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
     reuseIdentifier ||= "CELL_IDENTIFIER"
 
     cell = tableView.dequeueReusableCellWithIdentifier(reuseIdentifier)
-    cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: reuseIdentifier)
+    cell ||= CustomCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: reuseIdentifier)
 
     cell.textLabel.text = tasks[indexPath.row].title
-    # cell.imageView.image = UIImage.imageNamed("Checkbox-complete.png")
 
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator
+    # cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator
+
+    if indexPath.row == 0
+      cell.container_view.frame = [[10, 10],[self.view.frame.size.width - 20, self.view.frame.size.height / 5 - 10]]
+    elsif indexPath.row == @tasks.count - 1
+      cell.container_view.frame = [[10, 5],[self.view.frame.size.width - 20, self.view.frame.size.height / 5 - 10]]
+    else
+      cell.container_view.frame = [[10, 5],[self.view.frame.size.width - 20, self.view.frame.size.height / 5 - 10]]
+    end
+
+    if tasks[indexPath.row].complete == 1
+      cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
+    else
+      cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
+    end
+
+    cell.date_label.text = "Due: #{tasks[indexPath.row].due_date.day}-#{tasks[indexPath.row].due_date.month}-#{tasks[indexPath.row].due_date.year}"
 
     cell
   end
+
+  # def tableView(tableView)
 
 end

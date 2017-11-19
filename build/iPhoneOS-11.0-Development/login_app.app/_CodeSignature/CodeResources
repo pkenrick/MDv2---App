@@ -32,17 +32,17 @@
 		<data>
 		HpadEcH4ifWxUt0ljemb7BFlyC8=
 		</data>
-		<key>Tasks.png</key>
+		<key>blue_circle_empty.png</key>
 		<data>
-		gHHOQWKvbDtBalX4BfTBDq7Ryio=
+		sXRN8/owg6Qy1m/9GdwZXLTyxAE=
 		</data>
-		<key>Total.png</key>
+		<key>blue_circle_tick.png</key>
 		<data>
-		I4I0z/CEe3uSzSVli8exil2Pexg=
+		++t3zKkP5mYTtMS5g1Bf+RLtM8Q=
 		</data>
-		<key>TotalTasks.png</key>
+		<key>cell.png</key>
 		<data>
-		CYWu1vJfHHNTFkfXqltTssa5dKw=
+		1/QUrMnV9ywLnvnoWorw3dD8qxY=
 		</data>
 		<key>embedded.mobileprovision</key>
 		<data>
@@ -70,19 +70,19 @@
 		</data>
 		<key>login_app.app.dSYM/Contents/Resources/DWARF/login_app</key>
 		<data>
-		uBz1zibYSjbFsVNp0czBstdrDuY=
+		JA1YZ8lnXHQrGZiZfi8d4eR4jqI=
 		</data>
 		<key>login_app.momd/0001 initial.mom</key>
 		<data>
-		Rc0ipq9XRWs/ULtaYe/N3NY1Zvk=
+		mZI3YUbATLmhk869/ATN0hbckzM=
 		</data>
 		<key>login_app.momd/0001 initial.omo</key>
 		<data>
-		WV9aypF1iD4JnReCZF0jBa4V0Fo=
+		IQDTXsA0H0aqV4qfNgvw62AicB4=
 		</data>
 		<key>login_app.momd/VersionInfo.plist</key>
 		<data>
-		RNt/I4XM4N/cB027hJDu+6oPvvA=
+		XLifn1qeYauLLBsTDRmBhRIsEGI=
 		</data>
 		<key>monkeyIcon.png</key>
 		<data>
@@ -158,37 +158,37 @@
 			CaKWadbNGz7yjQ742FhYDoEkcCHgKE7Li8OgSwaf4MQ=
 			</data>
 		</dict>
-		<key>Tasks.png</key>
+		<key>blue_circle_empty.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			gHHOQWKvbDtBalX4BfTBDq7Ryio=
+			sXRN8/owg6Qy1m/9GdwZXLTyxAE=
 			</data>
 			<key>hash2</key>
 			<data>
-			+i2967qh2SdzFn/4MkAVTqDboS4FyF3zEe6Z0H7CGcc=
+			ZevVlXtBWWsVOAY7LAplWO57o4mVLs0YCnpjha390Ug=
 			</data>
 		</dict>
-		<key>Total.png</key>
+		<key>blue_circle_tick.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			I4I0z/CEe3uSzSVli8exil2Pexg=
+			++t3zKkP5mYTtMS5g1Bf+RLtM8Q=
 			</data>
 			<key>hash2</key>
 			<data>
-			kxczUgsOWCeubWXP/aUKNgAuzIRLh+/hsjTGW/aTMFY=
+			hGuNetqpbDAS6wtTGNW1hf0fPNeJ9Yd/iAPG2hqdmtc=
 			</data>
 		</dict>
-		<key>TotalTasks.png</key>
+		<key>cell.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			CYWu1vJfHHNTFkfXqltTssa5dKw=
+			1/QUrMnV9ywLnvnoWorw3dD8qxY=
 			</data>
 			<key>hash2</key>
 			<data>
-			n67Gh5dXAgZ+wDTwg+Zj3pXrfFnMBBZuSOvQycBE7fM=
+			4mybvmTZcioBGSoBTnecp2QxoxR7XlpKZNcQh3x6kj8=
 			</data>
 		</dict>
 		<key>embedded.mobileprovision</key>
@@ -261,44 +261,44 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			uBz1zibYSjbFsVNp0czBstdrDuY=
+			JA1YZ8lnXHQrGZiZfi8d4eR4jqI=
 			</data>
 			<key>hash2</key>
 			<data>
-			0SU1eLxMVYvzpXRzQXE+9Ug56YG0YGdth4LTjxwu4gE=
+			p5yX69rsinXOItZFCN9B5KCV6x258lWLncmZ+8EJMic=
 			</data>
 		</dict>
 		<key>login_app.momd/0001 initial.mom</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Rc0ipq9XRWs/ULtaYe/N3NY1Zvk=
+			mZI3YUbATLmhk869/ATN0hbckzM=
 			</data>
 			<key>hash2</key>
 			<data>
-			t4ftvJJPZYMWYn3awhxB3SbnLOozngBJgghtrlcdzaQ=
+			shezXcjV0pd/SvEQMkHiubpc6OaImVpH+R9uLBED9AY=
 			</data>
 		</dict>
 		<key>login_app.momd/0001 initial.omo</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			WV9aypF1iD4JnReCZF0jBa4V0Fo=
+			IQDTXsA0H0aqV4qfNgvw62AicB4=
 			</data>
 			<key>hash2</key>
 			<data>
-			DWcgUesqPRw9Dw8/8HSTYREXm1B/b1PJJXACkipHmZ0=
+			5IbkEf5KHo+73VXBGec3uZo7w8iMONkoGKonWcFgmzk=
 			</data>
 		</dict>
 		<key>login_app.momd/VersionInfo.plist</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			RNt/I4XM4N/cB027hJDu+6oPvvA=
+			XLifn1qeYauLLBsTDRmBhRIsEGI=
 			</data>
 			<key>hash2</key>
 			<data>
-			C0iTrGyAcd59VEfRvujOx5GN+/mnKZrkDkMazVQGcY8=
+			b93UvdpVRpOQTT0B4lhZuX+sER/fZIGwU4VO79v37b4=
 			</data>
 		</dict>
 		<key>monkeyIcon.png</key>
