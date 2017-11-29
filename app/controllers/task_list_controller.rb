@@ -6,8 +6,16 @@ class TaskListController < UIViewController
     self.init
     @type = type
     @tasks = tasks
+
     tab_image = @type == 'private' ? "monkeyIcon.png" : "monkeyIconDouble.png"
     self.tabBarItem = UITabBarItem.alloc.initWithTitle("#{type.capitalize} List", image: UIImage.imageNamed(tab_image), tag: 1)
+
+    add_task_button = UIButton.buttonWithType(UIButtonTypeCustom)
+    add_task_button.addTarget(self, action: 'add_task', forControlEvents: UIControlEventTouchUpInside)
+    add_task_button.setImage(UIImage.imageNamed('grey_circle_large_plus_small.png'), forState: UIControlStateNormal)
+    add_task_bar_button = UIBarButtonItem.alloc.initWithCustomView(add_task_button)
+    self.navigationItem.rightBarButtonItem = add_task_bar_button
+
     self
   end
 
@@ -48,8 +56,13 @@ class TaskListController < UIViewController
     # rect = text.boundingRectWithSize(cg_size, options: (NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading), context: nil)
 
     lay_out_table_header_view(header_view)
+  end
 
-    # puts NSDate.new
+  def add_task
+    add_task_controller = AddTaskController.alloc.init
+    add_task_controller.parent_controller = self
+    add_task_navigation_controller = UINavigationController.alloc.initWithRootViewController(add_task_controller)
+    self.presentViewController(add_task_navigation_controller, animated: true, completion: lambda {})
   end
 
 
@@ -165,7 +178,9 @@ class TaskListController < UIViewController
     cell = tableView.dequeueReusableCellWithIdentifier(reuseIdentifier)
     cell ||= CustomCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: reuseIdentifier)
 
-    cell.textLabel.text = tasks[indexPath.row].title
+    cell.selectionStyle = UITableViewCellSelectionStyleNone
+
+    cell.title_label.text = tasks[indexPath.row].title
 
     # cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator
 
@@ -188,6 +203,16 @@ class TaskListController < UIViewController
     cell
   end
 
-  # def tableView(tableView)
+  def tableView(tableView, didSelectRowAtIndexPath: indexPath)
+    cell = tableView.cellForRowAtIndexPath(indexPath)
+    cell.container_view.layer.borderWidth = 5
+  end
+
+  def tableView(tableView, didDeselectRowAtIndexPath: indexPath)
+    cell = tableView.cellForRowAtIndexPath(indexPath)
+    cell.container_view.layer.borderWidth = 1
+  end
+
+
 
 end
