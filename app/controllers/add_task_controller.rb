@@ -1,9 +1,10 @@
 class AddTaskController < UIViewController
 
-  attr_accessor :parent_controller, :table_view, :date_picker_visible, :title_field, :description_field, :date_picker, :note_field
+  attr_accessor :type, :parent_controller, :table_view, :date_picker_visible, :title_field, :description_field, :date_picker, :note_field, :monkey_button
 
-  def init
-    super
+  def initWithType(type)
+    self.init
+    @type = type
     self.navigationItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Cancel', style: UIBarButtonItemStylePlain, target: self, action: 'cancel_task')
     self.navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Save', style: UIBarButtonItemStylePlain, target: self, action: 'save_task')
     @date_picker_visible = false
@@ -50,11 +51,16 @@ class AddTaskController < UIViewController
   end
 
   def save_task
-    puts "===== saving task ======"
-    puts "title: #{title_field.text}"
-    puts "description: #{description_field.text}"
-    puts "date: #{date_picker.date.day}/#{date_picker.date.month}/#{date_picker.date.year}"
-    puts "note: #{note_field.text}"
+    Task.create(api_id: nil,
+                title: title_field.text,
+                details: description_field.text,
+                due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.day}/#{date_picker.date.month}/#{date_picker.date.year}"),
+                type: type,
+                complete: false
+                )
+    Task.save
+    self.parent_controller.table_view.reloadData
+    self.dismissViewControllerAnimated(true, completion: lambda {})
   end
 
   def date_changed
@@ -65,14 +71,32 @@ class AddTaskController < UIViewController
   end
 
   def add_monkey_owner
-    monkey_owner = UIImageView.alloc.initWithImage(UIImage.imageNamed("MonkeyBoy.png"))
-    image_size = self.view.frame.size.width / 2
-    monkey_owner.frame = [[self.view.frame.size.width / 2 - image_size / 2, self.view.frame.size.height],[image_size, image_size]]
-    self.view.addSubview(monkey_owner)
+    @monkey_button = UIButton.buttonWithType(UIButtonTypeCustom)
+    button_size = self.view.frame.size.width / 2
+    monkey_button.frame = [[self.view.frame.size.width / 2 - button_size / 2, self.view.frame.size.height],[button_size, button_size]]
+    monkey_button.setImage(UIImage.imageNamed("MonkeyBoy.png"), forState: UIControlStateNormal)
+    monkey_button.addTarget(self, action: 'change_owner', forControlEvents: UIControlEventTouchUpInside)
+    self.view.addSubview(monkey_button)
 
     UIView.animateWithDuration(1,
       animations: lambda {
-        monkey_owner.frame = [[self.view.frame.size.width / 2 - image_size / 2, self.view.frame.size.height - image_size / 2],[image_size, image_size]]
+        monkey_button.frame = [[self.view.frame.size.width / 2 - button_size / 2, self.view.frame.size.height - button_size / 2],[button_size, button_size]]
+      }
+    )
+  end
+
+  def change_owner
+    UIView.animateWithDuration(0.75,
+      animations: lambda {
+        monkey_button.frame = [[monkey_button.frame.origin.x, self.view.frame.size.height],[monkey_button.frame.size.width, monkey_button.frame.size.height]]
+      }, completion: lambda { |finished|
+        new_monkey = monkey_button.imageForState(UIControlStateNormal) == UIImage.imageNamed("MonkeyBoy.png") ? UIImage.imageNamed("MonkeyGirl.png") : UIImage.imageNamed("MonkeyBoy.png")
+        monkey_button.setImage(new_monkey, forState: UIControlStateNormal)
+        UIView.animateWithDuration(0.75,
+          animations: lambda {
+            monkey_button.frame = [[monkey_button.frame.origin.x, self.view.frame.size.height - monkey_button.frame.size.height / 2],[monkey_button.frame.size.width, monkey_button.frame.size.height]]
+          }
+        )
       }
     )
   end

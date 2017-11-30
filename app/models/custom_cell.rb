@@ -36,9 +36,11 @@ class CustomCell < UITableViewCell
   def layoutSubviews
     super
 
-    image_view.frame = [[container_view.frame.size.width / 20, container_view.frame.size.width / 20],[container_view.frame.size.width / 8, container_view.frame.size.width / 8]]
-    title_label.frame = [[container_view.frame.size.width / 20 + image_view.frame.size.width + container_view.frame.size.width / 20, container_view.frame.size.width / 30],[container_view.frame.size.width / 8 * 7 - (container_view.frame.size.width / 20 * 3), container_view.frame.size.width / 12]]
-    date_label.frame = [[container_view.frame.size.width / 20 + image_view.frame.size.width + container_view.frame.size.width / 20, container_view.frame.size.width / 30 + title_label.frame.size.height], [container_view.frame.size.width / 8 * 7 - (container_view.frame.size.width / 20 * 3), container_view.frame.size.width / 16]]
+    image_view.frame = [[container_view.frame.size.width / 30, container_view.frame.size.height / 2 - container_view.frame.size.height / 2 / 2],[container_view.frame.size.height / 2, container_view.frame.size.height / 2]]
+    title_label.backgroundColor = UIColor.redColor
+    title_label.frame = [[container_view.frame.size.width / 30 + image_view.frame.size.width + container_view.frame.size.width / 30, 0],[container_view.frame.size.width - (container_view.frame.size.width / 30 + image_view.frame.size.width + container_view.frame.size.width / 30), container_view.frame.size.height / 2]]
+    date_label.backgroundColor = UIColor.yellowColor
+    date_label.frame = [[container_view.frame.size.width / 30 + image_view.frame.size.width + container_view.frame.size.width / 30, title_label.frame.size.height], [container_view.frame.size.width - (container_view.frame.size.width / 30 + image_view.frame.size.width + container_view.frame.size.width / 30), container_view.frame.size.height / 2]]
 
     # image_label.backgroundColor = UIColor.colorWithRed(110.0/255.0, green:200.0/255.0, blue:255.0/255.0, alpha:1.0)
     # image_view.image = UIImage.imageNamed("blue_circle_tick.png")

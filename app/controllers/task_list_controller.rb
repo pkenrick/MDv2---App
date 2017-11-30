@@ -1,6 +1,6 @@
 class TaskListController < UIViewController
 
-  attr_accessor :type, :tasks
+  attr_accessor :type, :table_view, :tasks
 
   def initWithType(type, tasks)
     self.init
@@ -59,7 +59,7 @@ class TaskListController < UIViewController
   end
 
   def add_task
-    add_task_controller = AddTaskController.alloc.init
+    add_task_controller = AddTaskController.alloc.initWithType('private')
     add_task_controller.parent_controller = self
     add_task_navigation_controller = UINavigationController.alloc.initWithRootViewController(add_task_controller)
     self.presentViewController(add_task_navigation_controller, animated: true, completion: lambda {})
@@ -141,6 +141,7 @@ class TaskListController < UIViewController
     due_total_number = UILabel.alloc.initWithFrame([[due_today_label.frame.size.width,0],[due_today_view.frame.size.width / 3 * 1, due_today_view.frame.size.height]])
     no_of_tasks_due_today = 0
     tasks.each do |task|
+      next if task.due_date.nil?
       todays_date = NSDate.new
       if task.due_date.day == todays_date.day && task.due_date.month == todays_date.month && task.due_date.year == todays_date.year
         no_of_tasks_due_today += 1
@@ -167,9 +168,10 @@ class TaskListController < UIViewController
   end
 
   def tableView(tableView, heightForRowAtIndexPath: indexPath)
-    height = self.view.frame.size.height / 5
-    height += 5 if indexPath.row == 0 || indexPath.row == (@tasks.count - 1)
+    height = self.view.frame.size.height / 10 + 4
+    height += 2 if indexPath.row == 0 || indexPath.row == (@tasks.count - 1)
     height
+    # self.view.frame.size.height / 10 + 4
   end
 
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
@@ -185,12 +187,14 @@ class TaskListController < UIViewController
     # cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator
 
     if indexPath.row == 0
-      cell.container_view.frame = [[10, 10],[self.view.frame.size.width - 20, self.view.frame.size.height / 5 - 10]]
+      cell.container_view.frame = [[10, 4],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     elsif indexPath.row == @tasks.count - 1
-      cell.container_view.frame = [[10, 5],[self.view.frame.size.width - 20, self.view.frame.size.height / 5 - 10]]
+      cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     else
-      cell.container_view.frame = [[10, 5],[self.view.frame.size.width - 20, self.view.frame.size.height / 5 - 10]]
+      cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     end
+
+    # cell.container_view.frame = [[10, 2], [self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
 
     if tasks[indexPath.row].complete == 1
       cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
@@ -198,7 +202,9 @@ class TaskListController < UIViewController
       cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
     end
 
-    cell.date_label.text = "Due: #{tasks[indexPath.row].due_date.day}-#{tasks[indexPath.row].due_date.month}-#{tasks[indexPath.row].due_date.year}"
+    unless tasks[indexPath.row].due_date.nil?
+      cell.date_label.text = "Due: #{tasks[indexPath.row].due_date.day}-#{tasks[indexPath.row].due_date.month}-#{tasks[indexPath.row].due_date.year}"
+    end
 
     cell
   end
