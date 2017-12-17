@@ -30,6 +30,8 @@ schema "0001 initial" do
     string :details
     datetime :due_date
     string :type
+    integer32 :owner, optional: true
+    integer32 :app_list_position, optional: true
   end
 
 end

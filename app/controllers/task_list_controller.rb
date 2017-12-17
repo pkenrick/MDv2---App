@@ -1,36 +1,54 @@
 class TaskListController < UIViewController
 
-  attr_accessor :type, :table_view, :tasks
+  attr_accessor :type, :table_view, :tasks, :navigation_controller, :reorder_button
 
   def initWithType(type, tasks)
     self.init
     @type = type
-    @tasks = tasks
+    @tasks = Task.where(type: type).sort_by{ |task| task.app_list_position }
 
     tab_image = @type == 'private' ? "monkeyIcon.png" : "monkeyIconDouble.png"
     self.tabBarItem = UITabBarItem.alloc.initWithTitle("#{type.capitalize} List", image: UIImage.imageNamed(tab_image), tag: 1)
 
     add_task_button = UIButton.buttonWithType(UIButtonTypeCustom)
     add_task_button.addTarget(self, action: 'add_task', forControlEvents: UIControlEventTouchUpInside)
-    add_task_button.setImage(UIImage.imageNamed('grey_circle_large_plus_small.png'), forState: UIControlStateNormal)
+    add_task_button.setImage(UIImage.imageNamed('grey_circle_large_plus_32.png'), forState: UIControlStateNormal)
     add_task_bar_button = UIBarButtonItem.alloc.initWithCustomView(add_task_button)
-    self.navigationItem.rightBarButtonItem = add_task_bar_button
+    self.navigationItem.rightBarButtonItems = [add_task_bar_button]
+
+    @reorder_button = UIButton.buttonWithType(UIButtonTypeCustom)
+    @reorder_button.addTarget(self, action: 'reorder_list', forControlEvents: UIControlEventTouchUpInside)
+    @reorder_button.setImage(UIImage.imageNamed('arrows_32.png'), forState: UIControlStateNormal)
+    reorder_bar_button = UIBarButtonItem.alloc.initWithCustomView(@reorder_button)
+    self.navigationItem.leftBarButtonItems = [reorder_bar_button]
+
+    # edit_button = UIBarButtonItem.alloc.initWithTitle('Edit', style: UIBarButtonItemStylePlain, target: self, action: 'edit_list')
+    # edit_button.tintColor = UIColor.grayColor
+
 
     self
   end
 
   def viewDidLoad
+    super
     self.view.backgroundColor = UIColor.whiteColor
 
+    background_image_view = UIImageView.alloc.initWithFrame(self.view.bounds)
+    background_image_view.setImage(UIImage.imageNamed("background.png"))
+    background_image_view.alpha = 0.5
+    self.view.addSubview(background_image_view)
+
     self.navigationItem.title = "#{type.capitalize} List"
-    self.navigationController.navigationBar.setTitleTextAttributes(NSFontAttributeName => UIFont.fontWithName("AmericanTypewriter", size: 20))
+    navigation_controller.navigationBar.setTitleTextAttributes(NSFontAttributeName => UIFont.fontWithName("AmericanTypewriter", size: 20))
+
     create_table_view
   end
 
   def create_table_view
     @table_view = UITableView.alloc.init
     @table_view.separatorStyle = UITableViewCellSeparatorStyleNone
-    @table_view.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
+    # @table_view.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
+    @table_view.backgroundColor = UIColor.clearColor
 
     self.view.addSubview(@table_view)
     @table_view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,19 +82,6 @@ class TaskListController < UIViewController
     add_task_navigation_controller = UINavigationController.alloc.initWithRootViewController(add_task_controller)
     self.presentViewController(add_task_navigation_controller, animated: true, completion: lambda {})
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   def lay_out_table_header_view(header_view)
     description_label = UILabel.alloc.initWithFrame([[self.view.frame.size.width * 0.1 / 2,0],[self.view.frame.size.width * 0.9, header_view.frame.size.height / 3]])
@@ -156,6 +161,19 @@ class TaskListController < UIViewController
     due_today_view.addSubview(due_total_number)
   end
 
+  def reorder_list
+    if table_view.isEditing == false
+      table_view.setEditing(true, animated: true)
+      reorder_button.setImage(UIImage.imageNamed('pink_arrows_32.png'), forState: UIControlStateNormal)
+      puts "set to true"
+    else
+      table_view.setEditing(false, animated: true)
+      reorder_button.setImage(UIImage.imageNamed('arrows_32.png'), forState: UIControlStateNormal)
+      puts "set to false"
+    end
+  end
+
+
 
   # === UITableView Delegate ====
 
@@ -184,6 +202,9 @@ class TaskListController < UIViewController
 
     cell.title_label.text = tasks[indexPath.row].title
 
+    # colors = [UIColor.greenColor, UIColor.redColor, UIColor.blueColor, UIColor.grayColor]
+    # cell.title_label.backgroundColor = colors[indexPath.row]
+
     # cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator
 
     if indexPath.row == 0
@@ -194,8 +215,6 @@ class TaskListController < UIViewController
       cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     end
 
-    # cell.container_view.frame = [[10, 2], [self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
-
     if tasks[indexPath.row].complete == 1
       cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
     else
@@ -205,6 +224,13 @@ class TaskListController < UIViewController
     unless tasks[indexPath.row].due_date.nil?
       cell.date_label.text = "Due: #{tasks[indexPath.row].due_date.day}-#{tasks[indexPath.row].due_date.month}-#{tasks[indexPath.row].due_date.year}"
     end
+
+    cell.backgroundColor = UIColor.clearColor
+    # cell_background_view = UIImageView.alloc.initWithImage(cellBackgroundForRowAtIndexPath(indexPath))
+    #
+    # cell.postIt.image = UIImage.imageNamed("post_it_no_background.png")
+    #
+    # cell.backgroundView = cell_background_view
 
     cell
   end
@@ -219,6 +245,48 @@ class TaskListController < UIViewController
     cell.container_view.layer.borderWidth = 1
   end
 
+  def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
+    # cell = tableView.cellForRowAtIndexPath(indexPath)
+    # cell.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:220.0/255.0, blue:240.0/255.0, alpha:1.0)
+    UITableViewCellEditingStyleNone
+  end
 
+  def tableView(tableView, shouldIndentWhileEditingRowAtIndexPath: indexPath)
+    false
+  end
+
+  def tableView(tableView, moveRowAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
+    @tasks.insert(destinationIndexPath.row, @tasks.delete_at(sourceIndexPath.row))
+    table_view.reloadData
+
+    saved_tasks = Task.where(type: type)
+
+    if sourceIndexPath.row < destinationIndexPath.row
+      (sourceIndexPath.row..destinationIndexPath.row).each do |row|
+        if row == sourceIndexPath.row
+          saved_tasks.where(app_list_position: sourceIndexPath.row).first.app_list_position = nil
+        else
+          saved_tasks.where(app_list_position: row).first.app_list_position = row - 1
+        end
+      end
+      source_task = saved_tasks.where(app_list_position: nil).first
+      source_task.app_list_position = destinationIndexPath.row if source_task
+    else
+      (destinationIndexPath.row..sourceIndexPath.row).to_a.reverse.each do |row|
+        if row == sourceIndexPath.row
+          saved_tasks.where(app_list_position: sourceIndexPath.row).first.app_list_position = nil
+        else
+          saved_tasks.where(app_list_position: row).first.app_list_position = row + 1
+        end
+      end
+      source_task = saved_tasks.where(app_list_position: nil).first
+      source_task.app_list_position = destinationIndexPath.row if source_task
+    end
+    Task.save
+  end
+
+  def tableView(tableView, canMoveRowAtIndexPath: indexPath)
+    true
+  end
 
 end

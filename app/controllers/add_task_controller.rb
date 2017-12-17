@@ -1,12 +1,21 @@
 class AddTaskController < UIViewController
 
-  attr_accessor :type, :parent_controller, :table_view, :date_picker_visible, :title_field, :description_field, :date_picker, :note_field, :monkey_button
+  attr_accessor :type, :parent_controller, :table_view, :date_picker_visible, :title_field, :description_field, :date_picker, :note_field, :monkey_button, :owner_monkey_view, :owner_monkey_text
 
   def initWithType(type)
     self.init
     @type = type
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Cancel', style: UIBarButtonItemStylePlain, target: self, action: 'cancel_task')
+
+    cancel_button = UIButton.buttonWithType(UIButtonTypeCustom)
+    cancel_button.addTarget(self, action: 'cancel_task', forControlEvents: UIControlEventTouchUpInside)
+    cancel_button.setImage(UIImage.imageNamed('cross_thin_small.png'), forState: UIControlStateNormal)
+    cancel_task_bar_button = UIBarButtonItem.alloc.initWithCustomView(cancel_button)
+    self.navigationItem.leftBarButtonItem = cancel_task_bar_button
+
+
+    # self.navigationItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Cancel', style: UIBarButtonItemStylePlain, target: self, action: 'cancel_task')
     self.navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Save', style: UIBarButtonItemStylePlain, target: self, action: 'save_task')
+    self.navigationItem.rightBarButtonItem.tintColor = UIColor.grayColor
     @date_picker_visible = false
     self
   end
@@ -37,7 +46,6 @@ class AddTaskController < UIViewController
     gesture_recogizer.cancelsTouchesInView = false
     self.view.addGestureRecognizer(gesture_recogizer)
 
-
     self
   end
 
@@ -51,14 +59,16 @@ class AddTaskController < UIViewController
   end
 
   def save_task
-    Task.create(api_id: nil,
+    new_task = Task.create(api_id: nil,
                 title: title_field.text,
                 details: description_field.text,
-                due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.day}/#{date_picker.date.month}/#{date_picker.date.year}"),
+                due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.month}/#{date_picker.date.day}/#{date_picker.date.year}"),
                 type: type,
-                complete: false
+                complete: false,
+                app_list_position: self.parent_controller.tasks.length
                 )
     Task.save
+    self.parent_controller.tasks << new_task
     self.parent_controller.table_view.reloadData
     self.dismissViewControllerAnimated(true, completion: lambda {})
   end
@@ -74,27 +84,48 @@ class AddTaskController < UIViewController
     @monkey_button = UIButton.buttonWithType(UIButtonTypeCustom)
     button_size = self.view.frame.size.width / 2
     monkey_button.frame = [[self.view.frame.size.width / 2 - button_size / 2, self.view.frame.size.height],[button_size, button_size]]
-    monkey_button.setImage(UIImage.imageNamed("MonkeyBoy.png"), forState: UIControlStateNormal)
-    monkey_button.addTarget(self, action: 'change_owner', forControlEvents: UIControlEventTouchUpInside)
+    monkey_button.addTarget(self, action: 'change_owner:', forControlEvents: UIControlEventTouchUpInside)
+    monkey_button.tag = 1
     self.view.addSubview(monkey_button)
+
+    @owner_monkey_text = UILabel.alloc.initWithFrame([[0,0],[button_size, 25]])
+    owner_monkey_text.color = UIColor.grayColor
+    owner_monkey_text.text = 'You are the owner of this task'
+    owner_monkey_text.numberOfLines = 1
+    owner_monkey_text.adjustsFontSizeToFitWidth = true
+    @monkey_button.addSubview(owner_monkey_text)
+
+    @owner_monkey_view = UIImageView.alloc.initWithImage(UIImage.imageNamed("MonkeyBoy.png"))
+    owner_monkey_view.frame = [[0, owner_monkey_text.frame.size.height],[button_size, button_size]]
+    @monkey_button.addSubview(owner_monkey_view)
 
     UIView.animateWithDuration(1,
       animations: lambda {
-        monkey_button.frame = [[self.view.frame.size.width / 2 - button_size / 2, self.view.frame.size.height - button_size / 2],[button_size, button_size]]
+        monkey_button.frame = [[self.view.frame.size.width / 2 - monkey_button.frame.size.height / 2, self.view.frame.size.height - button_size / 2 - 25],[button_size, button_size]]
       }
     )
   end
 
-  def change_owner
+  def change_owner(selection)
     UIView.animateWithDuration(0.75,
       animations: lambda {
         monkey_button.frame = [[monkey_button.frame.origin.x, self.view.frame.size.height],[monkey_button.frame.size.width, monkey_button.frame.size.height]]
       }, completion: lambda { |finished|
-        new_monkey = monkey_button.imageForState(UIControlStateNormal) == UIImage.imageNamed("MonkeyBoy.png") ? UIImage.imageNamed("MonkeyGirl.png") : UIImage.imageNamed("MonkeyBoy.png")
-        monkey_button.setImage(new_monkey, forState: UIControlStateNormal)
+        if selection.tag == 1
+          new_monkey =  UIImage.imageNamed("MonkeyGirl.png")
+          new_text = owner_monkey_text.text = "Your partner is the owner of this task"
+          selection.tag = 2
+        else
+          new_monkey = UIImage.imageNamed("MonkeyBoy.png")
+          new_text = owner_monkey_text.text = "You are the owner of this task"
+          selection.tag = 1
+        end
+        owner_monkey_view.image = new_monkey
+        owner_monkey_text = new_text
+
         UIView.animateWithDuration(0.75,
           animations: lambda {
-            monkey_button.frame = [[monkey_button.frame.origin.x, self.view.frame.size.height - monkey_button.frame.size.height / 2],[monkey_button.frame.size.width, monkey_button.frame.size.height]]
+            monkey_button.frame = [[monkey_button.frame.origin.x, self.view.frame.size.height - monkey_button.frame.size.height / 2 - 25],[monkey_button.frame.size.width, monkey_button.frame.size.height]]
           }
         )
       }

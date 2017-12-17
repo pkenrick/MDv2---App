@@ -6,7 +6,8 @@ class AppDelegate
 
     sessionsController = SessionsController.alloc.init
     sessionsController.title = 'Monkey Do'
-    sessionsController.view.backgroundColor = UIColor.colorWithRed(110.0/255.0, green:200.0/255.0, blue:255.0/255.0, alpha:1.0)
+    # sessionsController.view.backgroundColor = UIColor.colorWithRed(110.0/255.0, green:200.0/255.0, blue:255.0/255.0, alpha:1.0)
+    sessionsController.view.backgroundColor = UIColor.whiteColor
 
     # navigationController = UINavigationController.alloc.initWithRootViewController(sessionsController)
 

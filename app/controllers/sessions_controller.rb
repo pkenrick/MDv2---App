@@ -5,7 +5,12 @@ class SessionsController < UIViewController
   def viewDidLoad
     super
     self.title = 'Sample Login'
-    self.view.backgroundColor = UIColor.blueColor
+    # self.view.backgroundColor = UIColor.blueColor
+
+    background_image_view = UIImageView.alloc.initWithFrame(self.view.bounds)
+    background_image_view.setImage(UIImage.imageNamed("background.png"))
+    background_image_view.alpha = 1
+    self.view.addSubview(background_image_view)
 
     # add logo to the title page
     add_logo
@@ -243,7 +248,9 @@ class SessionsController < UIViewController
         shared_task_list_controller = TaskListController.alloc.initWithType('shared', Task.where(type: 'shared'))
         settings_controller = UIViewController.alloc.init
         private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
+        private_task_list_controller.navigation_controller = private_nav_bar_controller
         shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
+        shared_task_list_controller.navigation_controller = shared_nav_bar_controller
         tab_bar_controller = UITabBarController.alloc.init
         tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
         self.presentViewController(tab_bar_controller, animated: true, completion: nil)

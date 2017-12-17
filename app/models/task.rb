@@ -24,4 +24,8 @@ class Task < CDQManagedObject
     @api_client ||= ApiClient.new
   end
 
+  def self.update_local_database(tasks)
+    # Task.
+  end
+
 end

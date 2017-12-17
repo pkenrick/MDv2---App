@@ -24,8 +24,9 @@ class ApiClient
   end
 
   def save_to_local_database(tasks, type)
+    local_tasks = Task.where(type: type)
     tasks.each do |task|
-      local_task = Task.where(api_id: task[:id])
+      local_task = local_tasks.where(api_id: task[:id])
       if local_task.any?
         local_task = local_task.first
         local_task.api_id = task[:id]
@@ -40,7 +41,8 @@ class ApiClient
                     complete: task[:complete?],
                     details: task[:description],
                     due_date: NSDate.dateWithNaturalLanguageString(task[:due_date]),
-                    type: type
+                    type: type,
+                    app_list_position: local_tasks.length
                     )
       end
       Task.save

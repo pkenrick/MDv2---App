@@ -7,5 +7,7 @@
     <attribute optional="YES" syncable="YES" attributeType="String" name="details"/>
     <attribute optional="YES" syncable="YES" attributeType="Date" name="due_date"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="type"/>
+    <attribute optional="YES" syncable="YES" attributeType="Integer 32" name="owner" defaultValueString="0"/>
+    <attribute optional="YES" syncable="YES" attributeType="Integer 32" name="app_list_position" defaultValueString="0"/>
   </entity>
 </model>
