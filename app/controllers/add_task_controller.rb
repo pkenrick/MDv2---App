@@ -1,6 +1,6 @@
 class AddTaskController < UIViewController
 
-  attr_accessor :type, :parent_controller, :table_view, :date_picker_visible, :title_field, :description_field, :date_picker, :note_field, :monkey_button, :owner_monkey_view, :owner_monkey_text
+  attr_accessor :type, :parent_controller, :table_view, :date_picker_visible, :title_field, :description_field, :date_picker, :current_date, :note_field, :monkey_button, :owner_monkey_view, :owner_monkey_text
 
   def initWithType(type)
     self.init
@@ -11,7 +11,6 @@ class AddTaskController < UIViewController
     cancel_button.setImage(UIImage.imageNamed('cross_thin_small.png'), forState: UIControlStateNormal)
     cancel_task_bar_button = UIBarButtonItem.alloc.initWithCustomView(cancel_button)
     self.navigationItem.leftBarButtonItem = cancel_task_bar_button
-
 
     # self.navigationItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Cancel', style: UIBarButtonItemStylePlain, target: self, action: 'cancel_task')
     self.navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Save', style: UIBarButtonItemStylePlain, target: self, action: 'save_task')
@@ -59,18 +58,27 @@ class AddTaskController < UIViewController
   end
 
   def save_task
-    new_task = Task.create(api_id: nil,
-                title: title_field.text,
-                details: description_field.text,
-                due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.month}/#{date_picker.date.day}/#{date_picker.date.year}"),
-                type: type,
-                complete: false,
-                app_list_position: self.parent_controller.tasks.length
-                )
-    Task.save
-    self.parent_controller.tasks << new_task
-    self.parent_controller.table_view.reloadData
-    self.dismissViewControllerAnimated(true, completion: lambda {})
+    if title_field.text == ""
+      title = "Title Required"
+      message = "Tasks cannot be created without a title."
+      alert_box = UIAlertView.alloc.initWithTitle(title, message: message, delegate: self, cancelButtonTitle: 'OK', otherButtonTitles: nil)
+      alert_box.show
+    else
+      new_task = Task.create(api_id: nil,
+                  title: title_field.text,
+                  details: description_field.text,
+                  due_date: current_date == 'Select date' || current_date.nil? ? nil : NSDate.dateWithNaturalLanguageString(current_date),
+                  # due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.month}/#{date_picker.date.day}/#{date_picker.date.year}"),
+                  type: type,
+                  complete: false,
+                  app_list_position: self.parent_controller.tasks.length
+                  )
+      Task.save
+      self.parent_controller.tasks << new_task
+      self.parent_controller.table_view.reloadData
+      self.parent_controller.count_tasks_due_today
+      self.dismissViewControllerAnimated(true, completion: lambda {})
+    end
   end
 
   def date_changed
@@ -185,6 +193,7 @@ class AddTaskController < UIViewController
         else
           cell.detailTextLabel.text = 'Select date'
         end
+        @current_date = cell.detailTextLabel.text
       elsif indexPath.row == 1
         @date_picker = UIDatePicker.alloc.init
         @date_picker.frame = [[0,0],[self.view.frame.size.width, 150]]

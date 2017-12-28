@@ -25,7 +25,6 @@ class TaskListController < UIViewController
     # edit_button = UIBarButtonItem.alloc.initWithTitle('Edit', style: UIBarButtonItemStylePlain, target: self, action: 'edit_list')
     # edit_button.tintColor = UIColor.grayColor
 
-
     self
   end
 
@@ -144,6 +143,22 @@ class TaskListController < UIViewController
     due_today_view.addSubview(due_today_label)
 
     due_total_number = UILabel.alloc.initWithFrame([[due_today_label.frame.size.width,0],[due_today_view.frame.size.width / 3 * 1, due_today_view.frame.size.height]])
+    count_tasks_due_today(due_total_number)
+    due_total_number.font = UIFont.fontWithName("Chalkduster", size: 30)
+    due_total_number.textColor = UIColor.grayColor
+    due_total_number.numberOfLines = 1
+    due_total_number.adjustsFontSizeToFitWidth = true
+    due_total_number.textAlignment = NSTextAlignmentCenter
+    due_total_number.tag = 1
+    due_today_view.addSubview(due_total_number)
+  end
+
+  def count_tasks_due_today(number_field = nil)
+    if number_field
+      due_total_number = number_field
+    else
+      due_total_number = self.table_view.tableHeaderView.viewWithTag(1)
+    end
     no_of_tasks_due_today = 0
     tasks.each do |task|
       next if task.due_date.nil?
@@ -153,12 +168,6 @@ class TaskListController < UIViewController
       end
     end
     due_total_number.text = no_of_tasks_due_today.to_s
-    due_total_number.font = UIFont.fontWithName("Chalkduster", size: 30)
-    due_total_number.textColor = UIColor.grayColor
-    due_total_number.numberOfLines = 1
-    due_total_number.adjustsFontSizeToFitWidth = true
-    due_total_number.textAlignment = NSTextAlignmentCenter
-    due_today_view.addSubview(due_total_number)
   end
 
   def reorder_list
@@ -221,16 +230,13 @@ class TaskListController < UIViewController
       cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
     end
 
-    unless tasks[indexPath.row].due_date.nil?
+    if tasks[indexPath.row].due_date.nil?
+      cell.date_label.text = "Due: Ongoing"
+    else
       cell.date_label.text = "Due: #{tasks[indexPath.row].due_date.day}-#{tasks[indexPath.row].due_date.month}-#{tasks[indexPath.row].due_date.year}"
     end
 
     cell.backgroundColor = UIColor.clearColor
-    # cell_background_view = UIImageView.alloc.initWithImage(cellBackgroundForRowAtIndexPath(indexPath))
-    #
-    # cell.postIt.image = UIImage.imageNamed("post_it_no_background.png")
-    #
-    # cell.backgroundView = cell_background_view
 
     cell
   end
