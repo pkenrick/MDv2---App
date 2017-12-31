@@ -180,11 +180,9 @@ class TaskListController < UIViewController
     if table_view.isEditing == false
       table_view.setEditing(true, animated: true)
       reorder_button.setImage(UIImage.imageNamed('pink_arrows_32.png'), forState: UIControlStateNormal)
-      puts "set to true"
     else
       table_view.setEditing(false, animated: true)
       reorder_button.setImage(UIImage.imageNamed('arrows_32.png'), forState: UIControlStateNormal)
-      puts "set to false"
     end
   end
 
@@ -202,6 +200,24 @@ class TaskListController < UIViewController
 
     Task.save
     table_view.reloadData
+  end
+
+  def delete_task(row)
+    @tasks.delete_at(row)
+    table_view.reloadData
+
+    saved_tasks = Task.where(type: type)
+    seleted_task = saved_tasks.where(app_list_position: row).first
+    seleted_task.destroy
+
+    (row..tasks.length - 1).each do |current_row|
+      current_task = saved_tasks.where(app_list_position: current_row + 1).first
+      current_task.app_list_position = current_row
+    end
+    Task.save
+
+    count_total_tasks
+    count_tasks_due_today
   end
 
 
@@ -276,11 +292,13 @@ class TaskListController < UIViewController
     cell.container_view.layer.borderWidth = 1
   end
 
-  # def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
-  #   # cell = tableView.cellForRowAtIndexPath(indexPath)
-  #   # cell.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:220.0/255.0, blue:240.0/255.0, alpha:1.0)
-  #   UITableViewCellEditingStyleNone
-  # end
+  def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
+    if table_view.isEditing == true
+      UITableViewCellEditingStyleNone
+    else
+      UITableViewCellEditingStyleDelete
+    end
+  end
 
   def tableView(tableView, shouldIndentWhileEditingRowAtIndexPath: indexPath)
     false
@@ -320,14 +338,6 @@ class TaskListController < UIViewController
     true
   end
 
-  def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
-    if table_view.isEditing == true
-      UITableViewCellEditingStyleNone
-    else
-      UITableViewCellEditingStyleDelete
-    end
-  end
-
   editingStyle = UITableViewCellEditingStyleDelete
   def tableView(tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
     # @list.delete_at(indexPath.row)
@@ -335,4 +345,9 @@ class TaskListController < UIViewController
     # tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimationFade)
   end
 
+  def tableView(tableView, editActionsForRowAtIndexPath: indexPath)
+    delete_button = UITableViewRowAction.rowActionWithStyle(UITableViewRowActionStyleDefault, title: 'Delete', handler: proc { |action, indexPath| delete_task(indexPath.row) })
+    delete_button.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:170.0/255.0, blue:220.0/255.0, alpha:1.0)
+    [delete_button]
+  end
 end
