@@ -76,6 +76,7 @@ class AddTaskController < UIViewController
       Task.save
       self.parent_controller.tasks << new_task
       self.parent_controller.table_view.reloadData
+      self.parent_controller.count_total_tasks
       self.parent_controller.count_tasks_due_today
       self.dismissViewControllerAnimated(true, completion: lambda {})
     end

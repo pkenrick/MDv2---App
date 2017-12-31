@@ -13,7 +13,7 @@ class CustomCell < UITableViewCell
     container_view.layer.borderColor = UIColor.colorWithRed(200.0/255.0, green:200.0/255.0, blue:200.0/255.0, alpha:1.0).CGColor
     self.contentView.addSubview(container_view)
 
-    @image_view = UIImageView.alloc.init
+    @image_view = UIButton.buttonWithType(UIButtonTypeCustom)
     self.container_view.addSubview(@image_view)
 
     @title_label = UILabel.alloc.init

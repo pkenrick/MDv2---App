@@ -127,6 +127,7 @@ class TaskListController < UIViewController
     total_tasks_number.numberOfLines = 1
     total_tasks_number.adjustsFontSizeToFitWidth = true
     total_tasks_number.textAlignment = NSTextAlignmentCenter
+    total_tasks_number.tag = 1
     total_tasks_view.addSubview(total_tasks_number)
 
     due_today_view = UILabel.alloc.init
@@ -149,15 +150,20 @@ class TaskListController < UIViewController
     due_total_number.numberOfLines = 1
     due_total_number.adjustsFontSizeToFitWidth = true
     due_total_number.textAlignment = NSTextAlignmentCenter
-    due_total_number.tag = 1
+    due_total_number.tag = 2
     due_today_view.addSubview(due_total_number)
+  end
+
+  def count_total_tasks
+    total_tasks_number = self.table_view.tableHeaderView.viewWithTag(1)
+    total_tasks_number.text = tasks.length.to_s
   end
 
   def count_tasks_due_today(number_field = nil)
     if number_field
       due_total_number = number_field
     else
-      due_total_number = self.table_view.tableHeaderView.viewWithTag(1)
+      due_total_number = self.table_view.tableHeaderView.viewWithTag(2)
     end
     no_of_tasks_due_today = 0
     tasks.each do |task|
@@ -182,6 +188,21 @@ class TaskListController < UIViewController
     end
   end
 
+  def toggle_complete_task(sender)
+    task = @tasks[sender.tag]
+    saved_task = Task.where(type: type, app_list_position: sender.tag).first
+
+    if task.complete == 0
+      task.complete = true
+      saved_task.complete = true
+    else
+      task.complete = false
+      saved_task.complete = false
+    end
+
+    Task.save
+    table_view.reloadData
+  end
 
 
   # === UITableView Delegate ====
@@ -225,10 +246,14 @@ class TaskListController < UIViewController
     end
 
     if tasks[indexPath.row].complete == 1
-      cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
+      # cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
+      cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_tick.png"), forState: UIControlStateNormal)
     else
-      cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
+      # cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
+      cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_empty.png"), forState: UIControlStateNormal)
     end
+    cell.image_view.tag = indexPath.row
+    cell.image_view.addTarget(self, action: "toggle_complete_task:", forControlEvents: UIControlEventTouchUpInside)
 
     if tasks[indexPath.row].due_date.nil?
       cell.date_label.text = "Due: Ongoing"
@@ -251,11 +276,11 @@ class TaskListController < UIViewController
     cell.container_view.layer.borderWidth = 1
   end
 
-  def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
-    # cell = tableView.cellForRowAtIndexPath(indexPath)
-    # cell.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:220.0/255.0, blue:240.0/255.0, alpha:1.0)
-    UITableViewCellEditingStyleNone
-  end
+  # def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
+  #   # cell = tableView.cellForRowAtIndexPath(indexPath)
+  #   # cell.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:220.0/255.0, blue:240.0/255.0, alpha:1.0)
+  #   UITableViewCellEditingStyleNone
+  # end
 
   def tableView(tableView, shouldIndentWhileEditingRowAtIndexPath: indexPath)
     false
@@ -293,6 +318,21 @@ class TaskListController < UIViewController
 
   def tableView(tableView, canMoveRowAtIndexPath: indexPath)
     true
+  end
+
+  def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)
+    if table_view.isEditing == true
+      UITableViewCellEditingStyleNone
+    else
+      UITableViewCellEditingStyleDelete
+    end
+  end
+
+  editingStyle = UITableViewCellEditingStyleDelete
+  def tableView(tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
+    # @list.delete_at(indexPath.row)
+    # Task.save_tasks(@type, @list)
+    # tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimationFade)
   end
 
 end

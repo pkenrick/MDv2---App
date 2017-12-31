@@ -53,7 +53,8 @@ class SessionsController < UIViewController
     self.view.addConstraint(continue_text_top)
     self.view.addConstraint(continue_text_left)
 
-    continue_button.addTarget(self, action: "continue_action", forControlEvents: UIControlEventTouchUpInside)
+    # continue_button.addTarget(self, action: "continue_action", forControlEvents: UIControlEventTouchUpInside)
+    continue_button.addTarget(self, action: "load_navigation_controller", forControlEvents: UIControlEventTouchUpInside)
   end
 
   def continue_action
@@ -242,22 +243,36 @@ class SessionsController < UIViewController
   end
 
   def load_navigation_controller
-    api_client.pull_tasks('private') do |private_api_tasks|
-      private_task_list_controller = TaskListController.alloc.initWithType('private', Task.where(type: 'private'))
-      api_client.pull_tasks('shared') do |shared_api_tasks|
-        shared_task_list_controller = TaskListController.alloc.initWithType('shared', Task.where(type: 'shared'))
-        settings_controller = UIViewController.alloc.init
-        private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
-        private_task_list_controller.navigation_controller = private_nav_bar_controller
-        shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
-        shared_task_list_controller.navigation_controller = shared_nav_bar_controller
-        tab_bar_controller = UITabBarController.alloc.init
-        tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
-        self.presentViewController(tab_bar_controller, animated: true, completion: nil)
+    # api_client.pull_tasks('private') do |private_api_tasks|
+    #   private_task_list_controller = TaskListController.alloc.initWithType('private', Task.where(type: 'private'))
+    #   api_client.pull_tasks('shared') do |shared_api_tasks|
+    #     shared_task_list_controller = TaskListController.alloc.initWithType('shared', Task.where(type: 'shared'))
+    #     settings_controller = UIViewController.alloc.init
+    #     private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
+    #     private_task_list_controller.navigation_controller = private_nav_bar_controller
+    #     shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
+    #     shared_task_list_controller.navigation_controller = shared_nav_bar_controller
+    #     tab_bar_controller = UITabBarController.alloc.init
+    #     tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
+    #     self.presentViewController(tab_bar_controller, animated: true, completion: nil)
+    #
+    #     settings_controller.tabBarItem = UITabBarItem.alloc.initWithTitle("Settings", image: UIImage.imageNamed("settingsIcon30.png"), tag: 1)
+    #   end
+    # end
 
-        settings_controller.tabBarItem = UITabBarItem.alloc.initWithTitle("Settings", image: UIImage.imageNamed("settingsIcon30.png"), tag: 1)
-      end
-    end
+    private_task_list_controller = TaskListController.alloc.initWithType('private', Task.where(type: 'private'))
+    shared_task_list_controller = TaskListController.alloc.initWithType('shared', Task.where(type: 'shared'))
+    settings_controller = UIViewController.alloc.init
+    private_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(private_task_list_controller)
+    private_task_list_controller.navigation_controller = private_nav_bar_controller
+    shared_nav_bar_controller = UINavigationController.alloc.initWithRootViewController(shared_task_list_controller)
+    shared_task_list_controller.navigation_controller = shared_nav_bar_controller
+    tab_bar_controller = UITabBarController.alloc.init
+    tab_bar_controller.viewControllers = [private_nav_bar_controller, settings_controller, shared_nav_bar_controller]
+    self.presentViewController(tab_bar_controller, animated: true, completion: nil)
+
+    settings_controller.tabBarItem = UITabBarItem.alloc.initWithTitle("Settings", image: UIImage.imageNamed("settingsIcon30.png"), tag: 1)
+
   end
 
 end
