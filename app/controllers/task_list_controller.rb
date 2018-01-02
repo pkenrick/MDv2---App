@@ -49,6 +49,7 @@ class TaskListController < UIViewController
     # @table_view.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
     @table_view.backgroundColor = UIColor.clearColor
 
+    # table_view.setEditing(true, animated: true)
     self.view.addSubview(@table_view)
     @table_view.translatesAutoresizingMaskIntoConstraints = false
     table_view_top = NSLayoutConstraint.constraintWithItem(@table_view, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeTopMargin, multiplier: 1.0, constant: 0.0)
@@ -73,6 +74,7 @@ class TaskListController < UIViewController
     # rect = text.boundingRectWithSize(cg_size, options: (NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading), context: nil)
 
     lay_out_table_header_view(header_view)
+
   end
 
   def add_task

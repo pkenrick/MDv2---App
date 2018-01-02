@@ -4,6 +4,7 @@ class CustomCell < UITableViewCell
 
   def initWithStyle(style, reuseIdentifier: reuseIdentifier)
     super
+
     # self.contentView.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
     self.contentView.backgroundColor = UIColor.clearColor
 
@@ -32,6 +33,7 @@ class CustomCell < UITableViewCell
 
   def viewDidLoad
     super
+
     self
   end
 
@@ -58,6 +60,34 @@ class CustomCell < UITableViewCell
     date_label_top = NSLayoutConstraint.constraintWithItem(date_label, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: title_label, attribute: NSLayoutAttributeBottom, multiplier: 1.0, constant: 0)
     container_view.addConstraint(date_label_left)
     container_view.addConstraint(date_label_top)
+  end
+
+  def setEditing(editing, animated: animated)
+    super
+    reorder_view = findReorderView(self)
+    if reorder_view
+      reorder_view.subviews.each do |subview|
+        if subview.class == UIImageView
+          subview.image = UIImage.imageNamed("drag_icon_light_wide.png")
+          subview.frame = [[0,0],[40,40]]
+          break
+        end
+      end
+    end
+  end
+
+  def findReorderView(view)
+    reorder_view = nil
+    view.subviews.each do |subview|
+      if subview.class.description.include?("Reorder")
+        reorder_view = subview
+        break
+      else
+        reorder_view = findReorderView(subview)
+        break if !reorder_view.nil?
+      end
+    end
+    return reorder_view
   end
 
 
