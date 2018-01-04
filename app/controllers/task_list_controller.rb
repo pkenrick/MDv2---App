@@ -216,14 +216,48 @@ class TaskListController < UIViewController
   end
 
   def uncomplete_task(sender)
-    puts '000000 uncompleting task'
+    incomplete_tasks = @tasks.select{ |t| t.complete == 0 }
+    saved_tasks = Task.where(type: type)
+
+    task = @tasks.select{ |task| task.complete ==  1 && task.app_list_position == sender.tag }.first
+
+    saved_task = saved_tasks.where(complete: 1, app_list_position: sender.tag).first
+
+    task.complete = false
+    task.app_list_position = incomplete_tasks.count
+
+    saved_task.complete = false
+    saved_task.app_list_position = incomplete_tasks.count
+
+    complete_tasks = @tasks.select{ |t| t.complete == 1 }
+    ((sender.tag)..(complete_tasks.length - 1)).each do |app_list_position|
+      current_task = saved_tasks.where(app_list_position: app_list_position + 1).first
+      current_task.app_list_position = app_list_position
+    end
+
+    Task.save
+    table_view.reloadData
   end
 
-  def delete_task(row)
-    @tasks.delete_at(row)
+  def delete_task(section, row)
+    if section == 0
+      tasks = @tasks.select{ |task| task.complete == 0 }
+    elsif
+      tasks = @tasks.select{ |task| task.complete == 1 }
+    end
+
+    task = tasks.select{ |t| t.app_list_position == row }.first
+    array_position = @tasks.index(task)
+    @tasks.delete_at(array_position)
+    tasks.delete(task)
     table_view.reloadData
 
-    saved_tasks = Task.where(type: type)
+    if section == 0
+      saved_tasks = Task.where(type: type, complete: 0)
+    elsif
+      saved_tasks = Task.where(type: type, complete: 1)
+    end
+
     seleted_task = saved_tasks.where(app_list_position: row).first
     seleted_task.destroy
 
@@ -295,10 +329,13 @@ class TaskListController < UIViewController
     if tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first.complete == 1
       # cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_tick.png"), forState: UIControlStateNormal)
+      puts cell.image_view.allTargets.anyObject
+      cell.image_view.removeTarget(self, action: "complete_task:", forControlEvents: UIControlEventTouchUpInside)
       cell.image_view.addTarget(self, action: "uncomplete_task:", forControlEvents: UIControlEventTouchUpInside)
     else
       # cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_empty.png"), forState: UIControlStateNormal)
+      cell.image_view.removeTarget(self, action: "uncomplete_task:", forControlEvents: UIControlEventTouchUpInside)
       cell.image_view.addTarget(self, action: "complete_task:", forControlEvents: UIControlEventTouchUpInside)
     end
     cell.image_view.tag = indexPath.row
@@ -379,7 +416,7 @@ class TaskListController < UIViewController
   end
 
   def tableView(tableView, editActionsForRowAtIndexPath: indexPath)
-    delete_button = UITableViewRowAction.rowActionWithStyle(UITableViewRowActionStyleDefault, title: 'Delete', handler: proc { |action, indexPath| delete_task(indexPath.row) })
+    delete_button = UITableViewRowAction.rowActionWithStyle(UITableViewRowActionStyleDefault, title: 'Delete', handler: proc { |action, indexPath| delete_task(indexPath.section, indexPath.row) })
     delete_button.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:170.0/255.0, blue:220.0/255.0, alpha:1.0)
     [delete_button]
   end
