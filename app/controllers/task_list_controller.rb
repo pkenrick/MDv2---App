@@ -5,7 +5,11 @@ class TaskListController < UIViewController
   def initWithType(type, tasks)
     self.init
     @type = type
-    @tasks = Task.where(type: type).sort_by{ |task| task.app_list_position }
+    @tasks = Task.where(type: type).sort_by{ |task| [task.complete, task.app_list_position] }
+
+    # @tasks.each do |task|
+    #   puts "---- #{task.title} : #{task.complete} : #{task.app_list_position}"
+    # end
 
     tab_image = @type == 'private' ? "monkeyIcon.png" : "monkeyIconDouble.png"
     self.tabBarItem = UITabBarItem.alloc.initWithTitle("#{type.capitalize} List", image: UIImage.imageNamed(tab_image), tag: 1)
@@ -74,7 +78,6 @@ class TaskListController < UIViewController
     # rect = text.boundingRectWithSize(cg_size, options: (NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading), context: nil)
 
     lay_out_table_header_view(header_view)
-
   end
 
   def add_task
@@ -188,20 +191,32 @@ class TaskListController < UIViewController
     end
   end
 
-  def toggle_complete_task(sender)
-    task = @tasks[sender.tag]
-    saved_task = Task.where(type: type, app_list_position: sender.tag).first
+  def complete_task(sender)
+    complete_tasks = @tasks.select{ |t| t.complete == 1 }
+    saved_tasks = Task.where(type: type)
 
-    if task.complete == 0
-      task.complete = true
-      saved_task.complete = true
-    else
-      task.complete = false
-      saved_task.complete = false
+    task = @tasks.select{ |task| task.complete ==  0 && task.app_list_position == sender.tag }.first
+
+    saved_task = saved_tasks.where(complete: 0, app_list_position: sender.tag).first
+
+    task.complete = true
+    task.app_list_position = complete_tasks.count
+
+    saved_task.complete = true
+    saved_task.app_list_position = complete_tasks.count
+
+    incomplete_tasks = @tasks.select{ |t| t.complete == 0 }
+    ((sender.tag)..(incomplete_tasks.length - 1)).each do |app_list_position|
+      current_task = saved_tasks.where(app_list_position: app_list_position + 1).first
+      current_task.app_list_position = app_list_position
     end
 
     Task.save
     table_view.reloadData
+  end
+
+  def uncomplete_task(sender)
+    puts '000000 uncompleting task'
   end
 
   def delete_task(row)
@@ -225,12 +240,24 @@ class TaskListController < UIViewController
 
   # === UITableView Delegate ====
 
-  def tableView(tableView, numberOfSectionsInTableView: tableView)
-    1
+  def numberOfSectionsInTableView(table_view)
+    2
   end
 
   def tableView(tableView, numberOfRowsInSection: section)
-    @tasks.count
+    if section == 0
+      @tasks.select{ |task| task.complete == 0 }.count
+    elsif section == 1
+      @tasks.select{ |task| task.complete == 1 }.count
+    end
+  end
+
+  def tableView(tableView, titleForHeaderInSection: section)
+    if section == 0
+      @tasks.select{ |task| task.complete == 0 }.any? ? "Incomplete" : nil
+    elsif section == 1
+      @tasks.select{ |task| task.complete == 1 }.any? ? "Complete" : nil
+    end
   end
 
   def tableView(tableView, heightForRowAtIndexPath: indexPath)
@@ -248,12 +275,14 @@ class TaskListController < UIViewController
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone
 
-    cell.title_label.text = tasks[indexPath.row].title
+    if indexPath.section == 0
+      tasks_for_section = tasks.select{ |task| task.complete == 0 }
+    elsif indexPath.section == 1
+      tasks_for_section = tasks.select{ |task| task.complete == 1 }
+    end
+    current_task = tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first
 
-    # colors = [UIColor.greenColor, UIColor.redColor, UIColor.blueColor, UIColor.grayColor]
-    # cell.title_label.backgroundColor = colors[indexPath.row]
-
-    # cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator
+    cell.title_label.text = current_task.title
 
     if indexPath.row == 0
       cell.container_view.frame = [[10, 4],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
@@ -263,20 +292,22 @@ class TaskListController < UIViewController
       cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     end
 
-    if tasks[indexPath.row].complete == 1
+    if tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first.complete == 1
       # cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_tick.png"), forState: UIControlStateNormal)
+      cell.image_view.addTarget(self, action: "uncomplete_task:", forControlEvents: UIControlEventTouchUpInside)
     else
       # cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_empty.png"), forState: UIControlStateNormal)
+      cell.image_view.addTarget(self, action: "complete_task:", forControlEvents: UIControlEventTouchUpInside)
     end
     cell.image_view.tag = indexPath.row
-    cell.image_view.addTarget(self, action: "toggle_complete_task:", forControlEvents: UIControlEventTouchUpInside)
 
-    if tasks[indexPath.row].due_date.nil?
+    due_date = tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first.due_date
+    if due_date.nil?
       cell.date_label.text = "Due: Ongoing"
     else
-      cell.date_label.text = "Due: #{tasks[indexPath.row].due_date.day}-#{tasks[indexPath.row].due_date.month}-#{tasks[indexPath.row].due_date.year}"
+      cell.date_label.text = "Due: #{due_date.day}-#{due_date.month}-#{due_date.year}"
     end
 
     cell.backgroundColor = UIColor.clearColor

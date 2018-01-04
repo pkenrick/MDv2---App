@@ -71,7 +71,7 @@ class AddTaskController < UIViewController
                   # due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.month}/#{date_picker.date.day}/#{date_picker.date.year}"),
                   type: type,
                   complete: false,
-                  app_list_position: self.parent_controller.tasks.length
+                  app_list_position: self.parent_controller.tasks.select{ |task| task.complete == 0 }.length
                   )
       Task.save
       self.parent_controller.tasks << new_task
