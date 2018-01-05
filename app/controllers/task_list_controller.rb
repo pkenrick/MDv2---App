@@ -206,8 +206,12 @@ class TaskListController < UIViewController
     saved_task.app_list_position = complete_tasks.count
 
     incomplete_tasks = @tasks.select{ |t| t.complete == 0 }
+    incomplete_tasks.each do |incomplete_task|
+      puts "incomplete task: #{incomplete_task.title}"
+    end
     ((sender.tag)..(incomplete_tasks.length - 1)).each do |app_list_position|
-      current_task = saved_tasks.where(app_list_position: app_list_position + 1).first
+      current_task = saved_tasks.where(complete: 0, app_list_position: app_list_position + 1).first
+      puts "===== moving task #{current_task.title} from position #{app_list_position + 1} to #{app_list_position}"
       current_task.app_list_position = app_list_position
     end
 
@@ -231,7 +235,7 @@ class TaskListController < UIViewController
 
     complete_tasks = @tasks.select{ |t| t.complete == 1 }
     ((sender.tag)..(complete_tasks.length - 1)).each do |app_list_position|
-      current_task = saved_tasks.where(app_list_position: app_list_position + 1).first
+      current_task = saved_tasks.where(complete: 1, app_list_position: app_list_position + 1).first
       current_task.app_list_position = app_list_position
     end
 
