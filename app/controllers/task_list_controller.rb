@@ -7,10 +7,6 @@ class TaskListController < UIViewController
     @type = type
     @tasks = Task.where(type: type).sort_by{ |task| [task.complete, task.app_list_position] }
 
-    # @tasks.each do |task|
-    #   puts "---- #{task.title} : #{task.complete} : #{task.app_list_position}"
-    # end
-
     tab_image = @type == 'private' ? "monkeyIcon.png" : "monkeyIconDouble.png"
     self.tabBarItem = UITabBarItem.alloc.initWithTitle("#{type.capitalize} List", image: UIImage.imageNamed(tab_image), tag: 1)
 
@@ -207,11 +203,9 @@ class TaskListController < UIViewController
 
     incomplete_tasks = @tasks.select{ |t| t.complete == 0 }
     incomplete_tasks.each do |incomplete_task|
-      puts "incomplete task: #{incomplete_task.title}"
     end
     ((sender.tag)..(incomplete_tasks.length - 1)).each do |app_list_position|
       current_task = saved_tasks.where(complete: 0, app_list_position: app_list_position + 1).first
-      puts "===== moving task #{current_task.title} from position #{app_list_position + 1} to #{app_list_position}"
       current_task.app_list_position = app_list_position
     end
 
@@ -292,17 +286,40 @@ class TaskListController < UIViewController
 
   def tableView(tableView, titleForHeaderInSection: section)
     if section == 0
-      @tasks.select{ |task| task.complete == 0 }.any? ? "Incomplete" : nil
+      @tasks.select{ |task| task.complete == 0 }.any? ? "--- Incomplete ---" : nil
     elsif section == 1
-      @tasks.select{ |task| task.complete == 1 }.any? ? "Complete" : nil
+      @tasks.select{ |task| task.complete == 1 }.any? ? "--- Complete ---" : nil
     end
   end
 
+  def tableView(tableView, viewForHeaderInSection: section)
+    section_header_view = UILabel.alloc.init
+    if section == 0
+      section_header_view.text = "--- Incomplete Tasks ---"
+    elsif section == 1
+      section_header_view.text = "--- Complete Tasks ---"
+    end
+    section_header_view.backgroundColor = UIColor.clearColor
+    section_header_view.textColor = UIColor.lightGrayColor
+    section_header_view.textAlignment = UITextAlignmentCenter
+    return section_header_view
+  end
+
+  def tableView(tableView, heightForHeaderInSection: section)
+    return self.view.frame.size.height / 20
+  end
+
   def tableView(tableView, heightForRowAtIndexPath: indexPath)
+    if indexPath.section == 0
+      tasks = @tasks.select{ |task| task.complete == 0 }
+    elsif indexPath.section == 1
+      tasks = @tasks.select{ |task| task.complete == 1 }
+    end
+
     height = self.view.frame.size.height / 10 + 4
-    height += 2 if indexPath.row == 0 || indexPath.row == (@tasks.count - 1)
+    height += 2 if indexPath.row == 0
+    height += 2 if indexPath.row == (tasks.count - 1)
     height
-    # self.view.frame.size.height / 10 + 4
   end
 
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
@@ -324,7 +341,7 @@ class TaskListController < UIViewController
 
     if indexPath.row == 0
       cell.container_view.frame = [[10, 4],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
-    elsif indexPath.row == @tasks.count - 1
+    elsif indexPath.row == tasks_for_section.count - 1
       cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     else
       cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
@@ -333,7 +350,6 @@ class TaskListController < UIViewController
     if tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first.complete == 1
       # cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_tick.png"), forState: UIControlStateNormal)
-      puts cell.image_view.allTargets.anyObject
       cell.image_view.removeTarget(self, action: "complete_task:", forControlEvents: UIControlEventTouchUpInside)
       cell.image_view.addTarget(self, action: "uncomplete_task:", forControlEvents: UIControlEventTouchUpInside)
     else
@@ -379,37 +395,56 @@ class TaskListController < UIViewController
   end
 
   def tableView(tableView, moveRowAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
-    @tasks.insert(destinationIndexPath.row, @tasks.delete_at(sourceIndexPath.row))
-    table_view.reloadData
-
-    saved_tasks = Task.where(type: type)
-
-    if sourceIndexPath.row < destinationIndexPath.row
-      (sourceIndexPath.row..destinationIndexPath.row).each do |row|
-        if row == sourceIndexPath.row
-          saved_tasks.where(app_list_position: sourceIndexPath.row).first.app_list_position = nil
-        else
-          saved_tasks.where(app_list_position: row).first.app_list_position = row - 1
-        end
+    if sourceIndexPath.section == destinationIndexPath.section
+      if sourceIndexPath.section == 0
+        saved_tasks = Task.where(type: type, complete: 0)
+      elsif sourceIndexPath.section == 1
+        saved_tasks = Task.where(type: type, complete: 1)
       end
-      source_task = saved_tasks.where(app_list_position: nil).first
-      source_task.app_list_position = destinationIndexPath.row if source_task
-    else
-      (destinationIndexPath.row..sourceIndexPath.row).to_a.reverse.each do |row|
-        if row == sourceIndexPath.row
-          saved_tasks.where(app_list_position: sourceIndexPath.row).first.app_list_position = nil
-        else
-          saved_tasks.where(app_list_position: row).first.app_list_position = row + 1
+
+      # @tasks.insert(destinationIndexPath.row, @tasks.delete_at(sourceIndexPath.row))
+      # table_view.reloadData
+
+      if sourceIndexPath.row < destinationIndexPath.row
+        (sourceIndexPath.row..destinationIndexPath.row).each do |row|
+          if row == sourceIndexPath.row
+            saved_tasks.where(app_list_position: sourceIndexPath.row).first.app_list_position = nil
+          else
+            saved_tasks.where(app_list_position: row).first.app_list_position = row - 1
+          end
         end
+        source_saved_task = saved_tasks.where(app_list_position: nil).first
+        source_saved_task.app_list_position = destinationIndexPath.row if source_saved_task
+      else
+        (destinationIndexPath.row..sourceIndexPath.row).to_a.reverse.each do |row|
+          if row == sourceIndexPath.row
+            saved_tasks.where(app_list_position: sourceIndexPath.row).first.app_list_position = nil
+          else
+            saved_tasks.where(app_list_position: row).first.app_list_position = row + 1
+          end
+        end
+        source_saved_task = saved_tasks.where(app_list_position: nil).first
+        source_saved_task.app_list_position = destinationIndexPath.row if source_saved_task
       end
-      source_task = saved_tasks.where(app_list_position: nil).first
-      source_task.app_list_position = destinationIndexPath.row if source_task
+      Task.save
     end
-    Task.save
+    table_view.reloadData
   end
 
   def tableView(tableView, canMoveRowAtIndexPath: indexPath)
     true
+  end
+
+  def tableView(tableView, targetIndexPathForMoveFromRowAtIndexPath: sourceIndexPath, toProposedIndexPath: proposedDestinationIndexPath)
+    if sourceIndexPath.section != proposedDestinationIndexPath.section
+      row = 0
+      if sourceIndexPath.section < proposedDestinationIndexPath.section
+        row = table_view.numberOfRowsInSection(sourceIndexPath.section) - 1
+      end
+      return NSIndexPath.indexPathForRow(row, inSection: sourceIndexPath.section)
+    else
+      return proposedDestinationIndexPath
+    end
   end
 
   editingStyle = UITableViewCellEditingStyleDelete
