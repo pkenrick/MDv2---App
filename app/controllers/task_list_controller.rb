@@ -284,13 +284,13 @@ class TaskListController < UIViewController
     end
   end
 
-  def tableView(tableView, titleForHeaderInSection: section)
-    if section == 0
-      @tasks.select{ |task| task.complete == 0 }.any? ? "--- Incomplete ---" : nil
-    elsif section == 1
-      @tasks.select{ |task| task.complete == 1 }.any? ? "--- Complete ---" : nil
-    end
-  end
+  # def tableView(tableView, titleForHeaderInSection: section)
+  #   if section == 0
+  #     @tasks.select{ |task| task.complete == 0 }.any? ? "--- Incomplete ---" : nil
+  #   elsif section == 1
+  #     @tasks.select{ |task| task.complete == 1 }.any? ? "--- Complete ---" : nil
+  #   end
+  # end
 
   def tableView(tableView, viewForHeaderInSection: section)
     section_header_view = UILabel.alloc.init
@@ -302,6 +302,7 @@ class TaskListController < UIViewController
     section_header_view.backgroundColor = UIColor.clearColor
     section_header_view.textColor = UIColor.lightGrayColor
     section_header_view.textAlignment = UITextAlignmentCenter
+    section_header_view.font = UIFont.fontWithName('Helvetica-Oblique', size: section_header_view.font.pointSize)
     return section_header_view
   end
 
@@ -374,7 +375,25 @@ class TaskListController < UIViewController
 
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
     cell = tableView.cellForRowAtIndexPath(indexPath)
-    cell.container_view.layer.borderWidth = 5
+    # cell.container_view.layer.borderWidth = 5
+    cell.container_view.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:170.0/255.0, blue:220.0/255.0, alpha:1.0)
+    UIView.animateWithDuration(0.25,
+      animations: lambda {
+        cell.container_view.backgroundColor = UIColor.whiteColor
+      }
+    )
+    if indexPath.section == 0
+      tasks = @tasks.select{ |task| task.complete == 0 }
+    elsif indexPath.section == 1
+      tasks = @tasks.select{ |task| task.complete == 1 }
+    end
+
+    task = tasks.select{ |task| task.app_list_position == indexPath.row}.first
+
+    edit_task_controller = EditTaskController.alloc.initWithTask(task)
+    edit_task_controller.parent_controller = self
+    edit_task_navigation_controller = UINavigationController.alloc.initWithRootViewController(edit_task_controller)
+    self.presentViewController(edit_task_navigation_controller, animated: true, completion: lambda {})
   end
 
   def tableView(tableView, didDeselectRowAtIndexPath: indexPath)
