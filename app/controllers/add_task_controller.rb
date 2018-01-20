@@ -68,8 +68,9 @@ class AddTaskController < UIViewController
                   title: title_field.text,
                   details: description_field.text,
                   due_date: current_date == 'Select date' || current_date.nil? ? nil : NSDate.dateWithNaturalLanguageString(current_date),
-                  # due_date: date_picker.date.nil? ? nil : NSDate.dateWithNaturalLanguageString("#{date_picker.date.month}/#{date_picker.date.day}/#{date_picker.date.year}"),
+                  notes: note_field.text,
                   type: type,
+                  show_complete: false,
                   complete: false,
                   app_list_position: self.parent_controller.tasks.select{ |task| task.complete == 0 }.length
                   )

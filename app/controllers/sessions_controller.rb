@@ -10,6 +10,8 @@ class SessionsController < UIViewController
     background_image_view = UIImageView.alloc.initWithFrame(self.view.bounds)
     background_image_view.setImage(UIImage.imageNamed("background.png"))
     background_image_view.alpha = 1
+    # background_image_view.setImage(UIImage.imageNamed("trees.png"))
+    # background_image_view.alpha = 0.5
     self.view.addSubview(background_image_view)
 
     # add logo to the title page

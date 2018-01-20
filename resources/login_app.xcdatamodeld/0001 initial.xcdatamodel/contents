@@ -3,9 +3,11 @@
   <entity name="Task" syncable="YES" representedClassName="Task" codeGenerationType="class">
     <attribute optional="YES" syncable="YES" attributeType="Integer 32" name="api_id" defaultValueString="0"/>
     <attribute optional="NO" syncable="YES" attributeType="String" name="title"/>
+    <attribute optional="NO" syncable="YES" attributeType="Boolean" name="show_complete"/>
     <attribute optional="NO" syncable="YES" attributeType="Boolean" name="complete"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="details"/>
     <attribute optional="YES" syncable="YES" attributeType="Date" name="due_date"/>
+    <attribute optional="YES" syncable="YES" attributeType="String" name="notes"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="type"/>
     <attribute optional="YES" syncable="YES" attributeType="Integer 32" name="owner" defaultValueString="0"/>
     <attribute optional="YES" syncable="YES" attributeType="Integer 32" name="app_list_position" defaultValueString="0"/>

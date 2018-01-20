@@ -34,6 +34,7 @@ class TaskListController < UIViewController
 
     background_image_view = UIImageView.alloc.initWithFrame(self.view.bounds)
     background_image_view.setImage(UIImage.imageNamed("background.png"))
+    # background_image_view.setImage(UIImage.imageNamed("trees.png"))
     background_image_view.alpha = 0.5
     self.view.addSubview(background_image_view)
 
@@ -44,12 +45,12 @@ class TaskListController < UIViewController
   end
 
   def create_table_view
-    @table_view = UITableView.alloc.init
+    @table_view = UITableView.alloc.initWithFrame(CGRectZero, style: UITableViewStyleGrouped)
+    # @table_view = UITableView.alloc.init
     @table_view.separatorStyle = UITableViewCellSeparatorStyleNone
-    # @table_view.backgroundColor = UIColor.colorWithRed(215.0/255.0, green:240.0/255.0, blue:250.0/255.0, alpha:1.0)
     @table_view.backgroundColor = UIColor.clearColor
+    @table_view.sectionFooterHeight = 0.0
 
-    # table_view.setEditing(true, animated: true)
     self.view.addSubview(@table_view)
     @table_view.translatesAutoresizingMaskIntoConstraints = false
     table_view_top = NSLayoutConstraint.constraintWithItem(@table_view, attribute: NSLayoutAttributeTop, relatedBy: NSLayoutRelationEqual, toItem: self.view, attribute: NSLayoutAttributeTopMargin, multiplier: 1.0, constant: 0.0)
@@ -68,16 +69,11 @@ class TaskListController < UIViewController
     header_view.frame = [header_view.frame.origin, [self.view.frame.size.width, self.view.frame.size.height / 6]]
     @table_view.tableHeaderView = header_view
 
-    # paragraph_rect = CGRect.new
-    # cg_size = CGSizeMake(self.view.frame.size.width, 1000)
-    # text = NSMutableAttributedString.alloc.initWithString('Only you have access to the tasks on this list.')
-    # rect = text.boundingRectWithSize(cg_size, options: (NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading), context: nil)
-
     lay_out_table_header_view(header_view)
   end
 
   def add_task
-    add_task_controller = AddTaskController.alloc.initWithType('private')
+    add_task_controller = AddTaskController.alloc.initWithType(type)
     add_task_controller.parent_controller = self
     add_task_navigation_controller = UINavigationController.alloc.initWithRootViewController(add_task_controller)
     self.presentViewController(add_task_navigation_controller, animated: true, completion: lambda {})
@@ -188,53 +184,54 @@ class TaskListController < UIViewController
   end
 
   def complete_task(sender)
+    source_index_path = NSIndexPath.indexPathForRow(sender.tag, inSection: 0)
+    index_paths_following_source = []
+    destination_index_path = NSIndexPath.indexPathForRow(table_view.numberOfRowsInSection(1), inSection: 1)
+
     complete_tasks = @tasks.select{ |t| t.complete == 1 }
-    saved_tasks = Task.where(type: type)
-
     task = @tasks.select{ |task| task.complete ==  0 && task.app_list_position == sender.tag }.first
-
-    saved_task = saved_tasks.where(complete: 0, app_list_position: sender.tag).first
-
+    task.show_complete = true
     task.complete = true
     task.app_list_position = complete_tasks.count
 
-    saved_task.complete = true
-    saved_task.app_list_position = complete_tasks.count
-
     incomplete_tasks = @tasks.select{ |t| t.complete == 0 }
-    incomplete_tasks.each do |incomplete_task|
-    end
+
     ((sender.tag)..(incomplete_tasks.length - 1)).each do |app_list_position|
-      current_task = saved_tasks.where(complete: 0, app_list_position: app_list_position + 1).first
+      current_task = incomplete_tasks.select{ |incomplete_task| incomplete_task.app_list_position == app_list_position + 1 }.first
       current_task.app_list_position = app_list_position
+      index_paths_following_source << NSIndexPath.indexPathForRow(app_list_position, inSection: 0)
     end
 
     Task.save
-    table_view.reloadData
+
+    table_view.moveRowAtIndexPath(source_index_path, toIndexPath: destination_index_path)
+    table_view.reloadRowsAtIndexPaths(index_paths_following_source << destination_index_path, withRowAnimation: UITableViewRowAnimationFade)
   end
 
   def uncomplete_task(sender)
+    source_index_path = NSIndexPath.indexPathForRow(sender.tag, inSection: 1)
+    index_paths_following_source = []
+    destination_index_path = NSIndexPath.indexPathForRow(table_view.numberOfRowsInSection(0), inSection: 0)
+
     incomplete_tasks = @tasks.select{ |t| t.complete == 0 }
-    saved_tasks = Task.where(type: type)
-
     task = @tasks.select{ |task| task.complete ==  1 && task.app_list_position == sender.tag }.first
-
-    saved_task = saved_tasks.where(complete: 1, app_list_position: sender.tag).first
-
+    task.show_complete = false
     task.complete = false
     task.app_list_position = incomplete_tasks.count
 
-    saved_task.complete = false
-    saved_task.app_list_position = incomplete_tasks.count
-
     complete_tasks = @tasks.select{ |t| t.complete == 1 }
+
     ((sender.tag)..(complete_tasks.length - 1)).each do |app_list_position|
-      current_task = saved_tasks.where(complete: 1, app_list_position: app_list_position + 1).first
+      current_task = complete_tasks.select{ |complete_task| complete_task.app_list_position == app_list_position + 1 }.first
       current_task.app_list_position = app_list_position
+      index_paths_following_source << NSIndexPath.indexPathForRow(app_list_position, inSection: 1)
     end
 
     Task.save
-    table_view.reloadData
+
+    table_view.moveRowAtIndexPath(source_index_path, toIndexPath: destination_index_path)
+
+    table_view.reloadRowsAtIndexPaths(index_paths_following_source << destination_index_path, withRowAnimation: UITableViewRowAnimationFade)
   end
 
   def delete_task(section, row)
@@ -297,9 +294,12 @@ class TaskListController < UIViewController
     if section == 0
       section_header_view.text = "--- Incomplete Tasks ---"
     elsif section == 1
-      section_header_view.text = "--- Complete Tasks ---"
+      # if table_view.numberOfRowsInSection == 0
+      #   section_header_view.text = ''
+      # else
+        section_header_view.text = "--- Complete Tasks ---"
+      # end
     end
-    section_header_view.backgroundColor = UIColor.clearColor
     section_header_view.textColor = UIColor.lightGrayColor
     section_header_view.textAlignment = UITextAlignmentCenter
     section_header_view.font = UIFont.fontWithName('Helvetica-Oblique', size: section_header_view.font.pointSize)
@@ -307,7 +307,11 @@ class TaskListController < UIViewController
   end
 
   def tableView(tableView, heightForHeaderInSection: section)
-    return self.view.frame.size.height / 20
+    if tableView.numberOfRowsInSection(section) == 0
+      return 0.1
+    else
+      return self.view.frame.size.height / 20
+    end
   end
 
   def tableView(tableView, heightForRowAtIndexPath: indexPath)
@@ -348,12 +352,18 @@ class TaskListController < UIViewController
       cell.container_view.frame = [[10, 2],[self.view.frame.size.width - 20, self.view.frame.size.height / 10]]
     end
 
-    if tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first.complete == 1
+    if current_task.show_complete
+      cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_tick.png"), forState: UIControlStateNormal)
+    else
+      cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_empty.png"), forState: UIControlStateNormal)
+    end
+
+    if current_task.complete == 1
       # cell.image_view.image = UIImage.imageNamed("blue_circle_tick.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_tick.png"), forState: UIControlStateNormal)
       cell.image_view.removeTarget(self, action: "complete_task:", forControlEvents: UIControlEventTouchUpInside)
       cell.image_view.addTarget(self, action: "uncomplete_task:", forControlEvents: UIControlEventTouchUpInside)
-    else
+    elsif current_task.complete == 0
       # cell.image_view.image = UIImage.imageNamed("blue_circle_empty.png")
       cell.image_view.setBackgroundImage(UIImage.imageNamed("blue_circle_empty.png"), forState: UIControlStateNormal)
       cell.image_view.removeTarget(self, action: "uncomplete_task:", forControlEvents: UIControlEventTouchUpInside)
@@ -361,7 +371,7 @@ class TaskListController < UIViewController
     end
     cell.image_view.tag = indexPath.row
 
-    due_date = tasks_for_section.select{ |task| task.app_list_position == indexPath.row }.first.due_date
+    due_date = current_task.due_date
     if due_date.nil?
       cell.date_label.text = "Due: Ongoing"
     else
@@ -375,7 +385,6 @@ class TaskListController < UIViewController
 
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
     cell = tableView.cellForRowAtIndexPath(indexPath)
-    # cell.container_view.layer.borderWidth = 5
     cell.container_view.backgroundColor = UIColor.colorWithRed(250.0/255.0, green:170.0/255.0, blue:220.0/255.0, alpha:1.0)
     UIView.animateWithDuration(0.25,
       animations: lambda {
@@ -394,11 +403,7 @@ class TaskListController < UIViewController
     edit_task_controller.parent_controller = self
     edit_task_navigation_controller = UINavigationController.alloc.initWithRootViewController(edit_task_controller)
     self.presentViewController(edit_task_navigation_controller, animated: true, completion: lambda {})
-  end
-
-  def tableView(tableView, didDeselectRowAtIndexPath: indexPath)
-    cell = tableView.cellForRowAtIndexPath(indexPath)
-    cell.container_view.layer.borderWidth = 1
+    # self.performSelectorInBackground('background_sync:', withObject: nil)
   end
 
   def tableView(tableView, editingStyleForRowAtIndexPath: indexPath)

@@ -90,19 +90,19 @@
 		</data>
 		<key>login_app.app.dSYM/Contents/Resources/DWARF/login_app</key>
 		<data>
-		hOC+4pnzRduzOmc5EA+kCnuRCPI=
+		1XPfx5IESK4TH2WTCbDN3xIq04o=
 		</data>
 		<key>login_app.momd/0001 initial.mom</key>
 		<data>
-		Gc04/Be7pGC8ils3RpovZW/WxtA=
+		GsnxjI3SXOgkMExx9Cr6bj6nIxk=
 		</data>
 		<key>login_app.momd/0001 initial.omo</key>
 		<data>
-		Greh0hZayouZ37nlbyhVefSPoio=
+		6Ho3BiVrgEdg/ViG5xjPRzi907I=
 		</data>
 		<key>login_app.momd/VersionInfo.plist</key>
 		<data>
-		Ffi+Xxjx3fwXioXwHFpY09BCrvk=
+		vgCjSS23U37EiaAKzG3T5ycMVuE=
 		</data>
 		<key>monkeyIcon.png</key>
 		<data>
@@ -123,6 +123,10 @@
 		<key>settingsIcon30.png</key>
 		<data>
 		8jcLYnN2CnfqUO6THb3rrdFWJWk=
+		</data>
+		<key>trees.png</key>
+		<data>
+		vrKOBSFICzx9mXk0tPJBeUlV2Kw=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -340,44 +344,44 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			hOC+4pnzRduzOmc5EA+kCnuRCPI=
+			1XPfx5IESK4TH2WTCbDN3xIq04o=
 			</data>
 			<key>hash2</key>
 			<data>
-			E8QaLaeiOQQrFFbkmjX1SFj8UQG75Mk+EL43ky1NeLM=
+			e3oZpIFK4W/qNBBVGpM2LvPo8A9pqdrB1RqRJ+y3Mxk=
 			</data>
 		</dict>
 		<key>login_app.momd/0001 initial.mom</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Gc04/Be7pGC8ils3RpovZW/WxtA=
+			GsnxjI3SXOgkMExx9Cr6bj6nIxk=
 			</data>
 			<key>hash2</key>
 			<data>
-			A/SjBMRa/swr5tY+hkFqIYO2PL16aNP9NO/fwktezoc=
+			AFuZp8Ta6DbWmwcfT64rn/2mnHOoOu5l4Sa69az8J/U=
 			</data>
 		</dict>
 		<key>login_app.momd/0001 initial.omo</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Greh0hZayouZ37nlbyhVefSPoio=
+			6Ho3BiVrgEdg/ViG5xjPRzi907I=
 			</data>
 			<key>hash2</key>
 			<data>
-			IHlEm7Bhcwn8yngTlRR9D+hhwV03NRXlqD5NLEwqBIg=
+			yF+U73Qog3IkOGJIIy63RP7ReADxpyii4FPY5ftzx/I=
 			</data>
 		</dict>
 		<key>login_app.momd/VersionInfo.plist</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Ffi+Xxjx3fwXioXwHFpY09BCrvk=
+			vgCjSS23U37EiaAKzG3T5ycMVuE=
 			</data>
 			<key>hash2</key>
 			<data>
-			VUUElapOOGJ8CPgSbUwtXPQt1V280KaAftJmH3DE63Q=
+			Y0W/UbfI+zrheW/3pFDyfTJSYq8mQ/f2aimnZyx0xKs=
 			</data>
 		</dict>
 		<key>monkeyIcon.png</key>
@@ -433,6 +437,17 @@
 			<key>hash2</key>
 			<data>
 			9xv6v5fZYqKWiS9iPY1DDeCLsuW9eANl5ryxgpHCaas=
+			</data>
+		</dict>
+		<key>trees.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			vrKOBSFICzx9mXk0tPJBeUlV2Kw=
+			</data>
+			<key>hash2</key>
+			<data>
+			V3aPc8sl6jZgbTLl1CoxV5lU02ZRTE582b8ApiMxxks=
 			</data>
 		</dict>
 	</dict>

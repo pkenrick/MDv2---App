@@ -66,6 +66,7 @@ class EditTaskController < UIViewController
       task.title = title_field.text
       task.details = description_field.text
       task.due_date = current_date == 'Select date' || current_date.nil? ? nil : NSDate.dateWithNaturalLanguageString(current_date)
+      task.notes = note_field.text
       Task.save
       self.parent_controller.table_view.reloadData
       # self.parent_controller.count_total_tasks

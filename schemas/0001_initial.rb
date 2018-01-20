@@ -26,9 +26,11 @@ schema "0001 initial" do
   entity 'Task' do
     integer32 :api_id, optional: true
     string :title, optional: false
+    boolean :show_complete, optional: false
     boolean :complete, optional: false
     string :details
     datetime :due_date
+    string :notes, optional: true
     string :type
     integer32 :owner, optional: true
     integer32 :app_list_position, optional: true
